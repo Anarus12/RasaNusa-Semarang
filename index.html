@@ -10,9 +10,145 @@
   <style>
     body { font-family: "Inter", sans-serif; }
     html { scroll-behavior: smooth; }
+    .section-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .section-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    }
+    .feature-icon {
+      width: 64px;
+      height: 64px;
+      background: rgba(217, 179, 16, 0.12);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #d9b310;
+      transition: all 0.3s ease;
+    }
+    .feature-card:hover .feature-icon {
+      background: #d9b310;
+      color: white;
+      transform: scale(1.05);
+    }
+    .btn-gold {
+      background: #d9b310;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    .btn-gold:hover {
+      background: #b5940e;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(217, 179, 16, 0.3);
+    }
+    .btn-outline-gold {
+      border: 2px solid #d9b310;
+      color: #d9b310;
+      transition: all 0.3s ease;
+    }
+    .btn-outline-gold:hover {
+      background: #d9b310;
+      color: white;
+    }
+    /* Referral styles */
+    .referral-code {
+      background: linear-gradient(135deg, #fff8d6, #fff3c4);
+      border: 2px dashed #d9b310;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .referral-code .code {
+      font-size: 32px;
+      font-weight: 800;
+      color: #d9b310;
+      letter-spacing: 4px;
+      font-family: monospace;
+    }
+    .referral-badge {
+      display: inline-block;
+      background: #d9b310;
+      color: white;
+      padding: 2px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .copy-tooltip {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a1a;
+      color: white;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .copy-tooltip.show {
+      opacity: 1;
+    }
+    .referral-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+    }
+    .referral-stats .stat-item {
+      background: white;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .referral-stats .stat-item .number {
+      font-size: 24px;
+      font-weight: 700;
+      color: #d9b310;
+    }
+    .referral-stats .stat-item .label {
+      font-size: 11px;
+      color: #888;
+      margin-top: 2px;
+    }
+    .level-badge {
+      display: inline-block;
+      padding: 2px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .level-1 { background: #dbeafe; color: #1e40af; }
+    .level-2 { background: #d1fae5; color: #065f46; }
+    .level-3 { background: #fef3c7; color: #92400e; }
+    .level-4 { background: #fde68a; color: #b45309; }
+    .level-5 { background: #fecaca; color: #991b1b; }
+    .quiz-option {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .quiz-option:hover { transform: scale(1.02); }
+    .quiz-option.correct { background-color: #22c55e !important; color: white; }
+    .quiz-option.wrong { background-color: #ef4444 !important; color: white; }
+    .quiz-option.disabled { pointer-events: none; opacity: 0.7; }
+    .community-post {
+      border-left: 3px solid #d9b310;
+      padding-left: 16px;
+      margin-bottom: 16px;
+    }
+    .community-post:last-child { margin-bottom: 0; }
   </style>
 </head>
 <body class="bg-[#fff9e6] min-h-screen flex flex-col">
+
+  <!-- COPY TOOLTIP -->
+  <div class="copy-tooltip" id="copyTooltip">✅ Kode referral disalin!</div>
 
   <!-- NAVBAR -->
   <nav class="bg-white shadow-md sticky top-0 z-50">
@@ -24,12 +160,14 @@
         <i class="fas fa-bars text-xl"></i>
       </button>
       <ul class="hidden md:flex flex-wrap gap-6 text-[#1a1a1a] font-semibold text-sm sm:text-base items-center" id="menu">
-        <li><a class="hover:text-[#d9b310]" href="index.html#beranda">Beranda</a></li>
+        <li><a class="hover:text-[#d9b310]" href="#beranda">Beranda</a></li>
         <li><a class="hover:text-[#d9b310]" href="marketplace.html">Marketplace</a></li>
-        <li><a class="hover:text-[#d9b310]" href="index.html#kuis">Kuis</a></li>
-        <li><a class="hover:text-[#d9b310]" href="ai sejarah.html">AI Sejarah</a></li>
-        <li><a class="hover:text-[#d9b310]" href="index.html#komunitas">Komunitas</a></li>
+        <li><a class="hover:text-[#d9b310]" href="#kuis">Kuis</a></li>
+        <li><a class="hover:text-[#d9b310]" href="ai-sejarah.html">AI Sejarah</a></li>
+        <li><a class="hover:text-[#d9b310]" href="#komunitas">Komunitas</a></li>
         <li><a class="hover:text-[#d9b310]" href="reward.html">Reward</a></li>
+        <li><a class="hover:text-[#d9b310] text-[#d9b310]" href="#afiliasi">Afiliasi</a></li>
+        <li><a class="hover:text-[#d9b310]" href="#premium">Premium</a></li>
         <li class="ml-auto flex gap-3">
           <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
           <button class="border border-[#d9b310] text-[#d9b310] px-4 py-2 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition">Masuk</button>
@@ -39,12 +177,14 @@
     <!-- Mobile menu -->
     <div class="md:hidden bg-white px-6 pb-4 hidden" id="mobile-menu">
       <ul class="flex flex-col gap-4 text-[#1a1a1a] font-semibold text-base">
-        <li><a class="hover:text-[#d9b310]" href="index.html#beranda" onclick="closeMobileMenu()">Beranda</a></li>
+        <li><a class="hover:text-[#d9b310]" href="#beranda" onclick="closeMobileMenu()">Beranda</a></li>
         <li><a class="hover:text-[#d9b310]" href="marketplace.html" onclick="closeMobileMenu()">Marketplace</a></li>
-        <li><a class="hover:text-[#d9b310]" href="index.html#kuis" onclick="closeMobileMenu()">Kuis</a></li>
-        <li><a class="hover:text-[#d9b310]" href="ai sejarah.html" onclick="closeMobileMenu()">AI Sejarah</a></li>
-        <li><a class="hover:text-[#d9b310]" href="index.html#komunitas" onclick="closeMobileMenu()">Komunitas</a></li>
+        <li><a class="hover:text-[#d9b310]" href="#kuis" onclick="closeMobileMenu()">Kuis</a></li>
+        <li><a class="hover:text-[#d9b310]" href="ai-sejarah.html" onclick="closeMobileMenu()">AI Sejarah</a></li>
+        <li><a class="hover:text-[#d9b310]" href="#komunitas" onclick="closeMobileMenu()">Komunitas</a></li>
         <li><a class="hover:text-[#d9b310]" href="reward.html" onclick="closeMobileMenu()">Reward</a></li>
+        <li><a class="hover:text-[#d9b310]" href="#afiliasi" onclick="closeMobileMenu()">Afiliasi</a></li>
+        <li><a class="hover:text-[#d9b310]" href="#premium" onclick="closeMobileMenu()">Premium</a></li>
       </ul>
       <div class="flex flex-col gap-3 mt-4">
         <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
@@ -53,7 +193,7 @@
     </div>
   </nav>
 
-  <!-- HERO SECTION -->
+  <!-- ========== HERO SECTION ========== -->
   <section class="bg-white max-w-7xl mx-auto mt-8 rounded-lg shadow-md px-6 py-12 flex flex-col md:flex-row items-center gap-8" id="beranda">
     <div class="md:w-1/2">
       <h1 class="text-3xl sm:text-4xl font-extrabold text-[#d9b310] mb-4 leading-tight">
@@ -62,16 +202,271 @@
       <p class="text-[#333333] text-base sm:text-lg mb-6">
         Temukan makanan khas Semarang, ikuti kuis seru, tanyakan sejarah kuliner pada AI, dan bergabung dengan komunitas pecinta kuliner!
       </p>
-      <a class="inline-block bg-[#d9b310] text-white px-6 py-3 rounded-md font-semibold hover:bg-[#b5940e] transition" href="marketplace.html">
-        Mulai Jelajah
-      </a>
+      <div class="flex flex-wrap gap-4">
+        <a class="bg-[#d9b310] text-white px-6 py-3 rounded-md font-semibold hover:bg-[#b5940e] transition" href="marketplace.html">
+          Mulai Jelajah
+        </a>
+        <a class="border border-[#d9b310] text-[#d9b310] px-6 py-3 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition" href="#afiliasi">
+          Jadi Afiliasi
+        </a>
+      </div>
     </div>
     <div class="md:w-1/2 w-full">
-      <img alt="Kuliner khas Semarang" class="rounded-lg shadow-lg w-full object-cover max-h-[400px]" src="kuliner.jpg" />
+      <img alt="Kuliner khas Semarang" class="rounded-lg shadow-lg w-full object-cover max-h-[400px]" src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop" />
     </div>
   </section>
 
-  <!-- KUIS SECTION (tetap di halaman utama) -->
+  <!-- ========== PROGRAM AFILIASI dengan REFERRAL ========== -->
+  <section class="max-w-7xl mx-auto mt-12 px-6 py-10 bg-white rounded-lg shadow-md" id="afiliasi">
+    <div class="text-center mb-8">
+      <span class="inline-block bg-[#fff8d6] text-[#d9b310] px-4 py-1 rounded-full text-sm font-semibold mb-3">
+        <i class="fas fa-rocket mr-1"></i> Program Mitra
+      </span>
+      <h2 class="text-3xl font-bold text-[#d9b310]">Program Afiliasi & Referral</h2>
+      <p class="text-[#555555] max-w-2xl mx-auto mt-2 text-base">
+        Dapatkan komisi dengan mempromosikan produk UMKM kuliner lokal. Bagikan kode referralmu dan dapatkan bonus tambahan!
+      </p>
+    </div>
+
+    <div class="flex flex-col lg:flex-row items-start gap-8">
+      <!-- Ilustrasi & Statistik -->
+      <div class="lg:w-1/2 w-full">
+        <div class="bg-[#fff8d6] rounded-2xl p-6 relative overflow-hidden">
+          <img 
+            alt="Ilustrasi program afiliasi dengan pengguna mempromosikan produk kuliner" 
+            class="rounded-xl w-full object-cover max-h-[280px]" 
+            src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop" 
+          />
+          <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-xs text-gray-500">Komisi Mingguan</span>
+                <p class="font-bold text-[#d9b310] text-lg">Rp 850.000</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">+12%</span>
+                <i class="fas fa-arrow-up text-green-500"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Statistik Referral -->
+        <div class="mt-4 referral-stats">
+          <div class="stat-item">
+            <div class="number" id="totalReferrals">0</div>
+            <div class="label">Total Referral</div>
+          </div>
+          <div class="stat-item">
+            <div class="number" id="referralBonus">Rp 0</div>
+            <div class="label">Bonus Referral</div>
+          </div>
+          <div class="stat-item">
+            <div class="number" id="activeReferrals">0</div>
+            <div class="label">Aktif Bulan Ini</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Keunggulan + Kode Referral -->
+      <div class="lg:w-1/2 w-full">
+        <div class="space-y-4">
+          <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-[#fff8d6] transition">
+            <div class="feature-icon flex-shrink-0">
+              <i class="fas fa-gift"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-[#1a1a1a]">Daftar Gratis</h4>
+              <p class="text-sm text-[#555555]">Daftar gratis dan dapatkan link afiliasi unik untuk setiap produk.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-[#fff8d6] transition">
+            <div class="feature-icon flex-shrink-0">
+              <i class="fas fa-users"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-[#1a1a1a]">Program Referral</h4>
+              <p class="text-sm text-[#555555]">Ajak teman bergabung, dapatkan bonus <span class="font-bold text-[#d9b310]">Rp 25.000</span> per referral aktif!</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-[#fff8d6] transition">
+            <div class="feature-icon flex-shrink-0">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-[#1a1a1a]">Dashboard Real-time</h4>
+              <p class="text-sm text-[#555555]">Pantau klik, penjualan, dan komisi melalui dashboard afiliasi.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-[#fff8d6] transition">
+            <div class="feature-icon flex-shrink-0">
+              <i class="fas fa-coins"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-[#1a1a1a]">Pembayaran Otomatis</h4>
+              <p class="text-sm text-[#555555]">Komisi dibayarkan secara otomatis dan transparan setiap minggu.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- KODE REFERRAL -->
+        <div class="referral-code mt-6">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold text-[#555555]">
+              <i class="fas fa-link mr-1"></i> Kode Referral Kamu
+            </span>
+            <span class="referral-badge">
+              <i class="fas fa-star mr-1"></i> Aktif
+            </span>
+          </div>
+          <div class="flex items-center justify-center gap-4 mt-3">
+            <span class="code" id="referralCode">RASA-7X9K2</span>
+            <button onclick="copyReferralCode()" class="bg-[#d9b310] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#b5940e] transition flex items-center gap-2">
+              <i class="fas fa-copy"></i> Salin
+            </button>
+          </div>
+          <div class="flex items-center justify-center gap-4 mt-3 text-sm text-gray-500">
+            <span><i class="fas fa-share-alt mr-1"></i> Bagikan ke teman</span>
+            <span><i class="fas fa-gift mr-1"></i> Bonus Rp 25.000/referral</span>
+          </div>
+          <div class="flex flex-wrap justify-center gap-2 mt-3">
+            <a href="#" class="text-[#25D366] hover:opacity-70 text-xl"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" class="text-[#1DA1F2] hover:opacity-70 text-xl"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-[#E1306C] hover:opacity-70 text-xl"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-[#0A66C2] hover:opacity-70 text-xl"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="text-[#4267B2] hover:opacity-70 text-xl"><i class="fab fa-facebook-f"></i></a>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-4">
+          <a href="#" class="btn-gold px-8 py-3 rounded-md font-semibold inline-flex items-center gap-2">
+            <i class="fas fa-user-plus"></i> Daftar Sekarang
+          </a>
+          <a href="#" class="btn-outline-gold px-8 py-3 rounded-md font-semibold inline-flex items-center gap-2">
+            <i class="fas fa-info-circle"></i> Pelajari Lebih Lanjut
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistik Afiliasi -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-gray-200">
+      <div class="text-center">
+        <div class="text-2xl font-bold text-[#d9b310]">2.847</div>
+        <div class="text-sm text-gray-500">Total Afiliasi</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-[#d9b310]">Rp 12,5M</div>
+        <div class="text-sm text-gray-500">Total Komisi</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-[#d9b310]">4.2K</div>
+        <div class="text-sm text-gray-500">Produk Terjual</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-[#d9b310]">98%</div>
+        <div class="text-sm text-gray-500">Kepuasan Mitra</div>
+      </div>
+    </div>
+
+    <!-- Cara Kerja Referral -->
+    <div class="mt-6 pt-6 border-t border-gray-200">
+      <h3 class="text-center font-bold text-lg text-[#1a1a1a] mb-4">
+        <i class="fas fa-info-circle text-[#d9b310] mr-2"></i>
+        Cara Kerja Program Referral
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+        <div class="bg-[#fff8d6] p-4 rounded-lg">
+          <div class="w-10 h-10 bg-[#d9b310] text-white rounded-full flex items-center justify-center mx-auto mb-2 font-bold">1</div>
+          <h4 class="font-semibold">Dapatkan Kode</h4>
+          <p class="text-sm text-gray-500">Setelah daftar, kamu mendapat kode referral unik</p>
+        </div>
+        <div class="bg-[#fff8d6] p-4 rounded-lg">
+          <div class="w-10 h-10 bg-[#d9b310] text-white rounded-full flex items-center justify-center mx-auto mb-2 font-bold">2</div>
+          <h4 class="font-semibold">Bagikan Link</h4>
+          <p class="text-sm text-gray-500">Sebarkan kode ke teman & media sosial</p>
+        </div>
+        <div class="bg-[#fff8d6] p-4 rounded-lg">
+          <div class="w-10 h-10 bg-[#d9b310] text-white rounded-full flex items-center justify-center mx-auto mb-2 font-bold">3</div>
+          <h4 class="font-semibold">Dapatkan Bonus</h4>
+          <p class="text-sm text-gray-500">Setiap teman aktif, kamu dapat <span class="font-bold text-[#d9b310]">Rp 25.000</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FITUR PREMIUM ========== -->
+  <section class="max-w-7xl mx-auto mt-12 px-6 py-10 bg-white rounded-lg shadow-md" id="premium">
+    <div class="text-center mb-8">
+      <span class="inline-block bg-[#d9b310]/10 text-[#d9b310] px-4 py-1 rounded-full text-sm font-semibold mb-3">
+        <i class="fas fa-crown mr-1"></i> Untuk Penjual UMKM
+      </span>
+      <h2 class="text-3xl font-bold text-[#d9b310]">Fitur Premium untuk Penjual</h2>
+      <p class="text-[#555555] max-w-2xl mx-auto mt-2 text-base">
+        Tingkatkan penjualan dan pemasaran dengan fitur analisis dan promosi eksklusif.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Card 1 -->
+      <div class="feature-card bg-[#fff8d6] rounded-xl p-6 text-center hover:shadow-lg transition">
+        <div class="feature-icon mx-auto mb-4">
+          <i class="fas fa-chart-pie"></i>
+        </div>
+        <h3 class="font-bold text-xl mb-2">Dashboard Analisis Penjualan</h3>
+        <p class="text-[#555555] text-sm">
+          Pantau performa produk, tren pembelian, dan data pelanggan secara real-time.
+        </p>
+        <div class="mt-4 inline-block bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full">
+          <i class="fas fa-circle text-[8px] mr-1"></i> Live
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="feature-card bg-[#fff8d6] rounded-xl p-6 text-center hover:shadow-lg transition">
+        <div class="feature-icon mx-auto mb-4">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <h3 class="font-bold text-xl mb-2">Promosi Prioritas</h3>
+        <p class="text-[#555555] text-sm">
+          Produk Anda akan tampil lebih menonjol di halaman utama dan rekomendasi.
+        </p>
+        <div class="mt-4 inline-block bg-[#d9b310]/20 text-[#d9b310] text-xs px-3 py-1 rounded-full">
+          <i class="fas fa-star mr-1"></i> Premium
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="feature-card bg-[#fff8d6] rounded-xl p-6 text-center hover:shadow-lg transition">
+        <div class="feature-icon mx-auto mb-4">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <h3 class="font-bold text-xl mb-2">Pelatihan Digital Marketing</h3>
+        <p class="text-[#555555] text-sm">
+          Akses webinar dan materi edukasi untuk meningkatkan kemampuan pemasaran online.
+        </p>
+        <div class="mt-4 inline-block bg-blue-100 text-blue-600 text-xs px-3 py-1 rounded-full">
+          <i class="fas fa-video mr-1"></i> 12+ Modul
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Premium -->
+    <div class="mt-8 text-center">
+      <div class="bg-[#d9b310]/5 rounded-xl p-6 max-w-2xl mx-auto">
+        <p class="text-sm text-gray-600 mb-3">
+          <i class="fas fa-gem text-[#d9b310] mr-1"></i>
+          Mulai dari <span class="font-bold text-[#d9b310]">Rp 99.000/bulan</span>
+        </p>
+        <a href="#" class="btn-gold px-8 py-3 rounded-md font-semibold inline-flex items-center gap-2">
+          <i class="fas fa-crown"></i> Daftar Fitur Premium
+        </a>
+        <p class="text-xs text-gray-400 mt-2">*Gratis 7 hari pertama untuk pendaftar baru</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== KUIS SECTION ========== -->
   <section class="max-w-7xl mx-auto mt-12 px-6 py-8 bg-white rounded-lg shadow-md" id="kuis">
     <h2 class="text-2xl sm:text-3xl font-bold text-[#d9b310] mb-2 text-center">
       🧠 Kuis Kuliner Semarang
@@ -93,7 +488,7 @@
     <div id="quiz-container" class="max-w-2xl mx-auto bg-[#fff8d6] p-6 rounded-lg shadow-inner">
       <div id="quiz-status" class="flex justify-between items-center mb-4">
         <span id="quiz-level-label" class="font-bold text-[#d9b310]">Level 1 - Mudah</span>
-        <span id="quiz-score" class="font-bold">⭐ Poin: 0</span>
+        <span id="quiz-score" class="font-bold">⭐ Poin: <span id="quiz-points-display">0</span></span>
       </div>
       <div id="quiz-question" class="text-lg font-semibold mb-4">Klik salah satu level di atas untuk mulai kuis!</div>
       <div id="quiz-options" class="grid grid-cols-1 gap-3"></div>
@@ -102,7 +497,7 @@
     </div>
   </section>
 
-  <!-- KOMUNITAS SECTION (tetap di halaman utama) -->
+  <!-- ========== KOMUNITAS SECTION ========== -->
   <section class="max-w-7xl mx-auto mt-12 px-6 py-8 bg-white rounded-lg shadow-md" id="komunitas">
     <h2 class="text-2xl sm:text-3xl font-bold text-[#d9b310] mb-2 text-center">
       💬 Komunitas Kuliner Semarang
@@ -150,7 +545,7 @@
     </div>
   </section>
 
-  <!-- FOOTER -->
+  <!-- ========== FOOTER ========== -->
   <footer class="bg-[#d9b310] text-white py-6 mt-auto">
     <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-sm text-center md:text-left">© 2025 RasaNusantara. Nikmati kuliner Semarang!</p>
@@ -174,6 +569,92 @@
       mobileMenu.classList.add("hidden");
       menuToggle.innerHTML = '<i class="fas fa-bars text-xl"></i>';
     }
+
+    // ========== REFERRAL SYSTEM ==========
+    // Generate random referral code
+    function generateReferralCode() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let code = 'RASA-';
+      for (let i = 0; i < 5; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    }
+
+    // Get or create referral code
+    let referralCode = localStorage.getItem('referralCode');
+    if (!referralCode) {
+      referralCode = generateReferralCode();
+      localStorage.setItem('referralCode', referralCode);
+    }
+    document.getElementById('referralCode').textContent = referralCode;
+
+    // Get referral stats from localStorage
+    let referralData = JSON.parse(localStorage.getItem('referralData')) || {
+      total: 0,
+      bonus: 0,
+      active: 0
+    };
+
+    function updateReferralStats() {
+      document.getElementById('totalReferrals').textContent = referralData.total;
+      document.getElementById('referralBonus').textContent = 'Rp ' + referralData.bonus.toLocaleString();
+      document.getElementById('activeReferrals').textContent = referralData.active;
+    }
+    updateReferralStats();
+
+    // Copy referral code
+    function copyReferralCode() {
+      const code = document.getElementById('referralCode').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const tooltip = document.getElementById('copyTooltip');
+        tooltip.classList.add('show');
+        setTimeout(() => {
+          tooltip.classList.remove('show');
+        }, 2000);
+      }).catch(() => {
+        // Fallback
+        const input = document.createElement('input');
+        input.value = code;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        const tooltip = document.getElementById('copyTooltip');
+        tooltip.classList.add('show');
+        setTimeout(() => {
+          tooltip.classList.remove('show');
+        }, 2000);
+      });
+    }
+
+    // Simulate referral from URL (when someone clicks referral link)
+    function handleReferralFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get('ref');
+      if (ref && ref !== localStorage.getItem('referralCode')) {
+        // Someone used a referral code
+        const referrerCode = ref;
+        // Add to stats
+        let data = JSON.parse(localStorage.getItem('referralData')) || {
+          total: 0,
+          bonus: 0,
+          active: 0
+        };
+        data.total += 1;
+        data.bonus += 25000;
+        data.active += 1;
+        localStorage.setItem('referralData', JSON.stringify(data));
+        updateReferralStats();
+        // Show notification
+        setTimeout(() => {
+          alert('🎉 Selamat! Kamu berhasil direfer oleh kode ' + referrerCode + '! Dapatkan bonus Rp 25.000 setelah aktif.');
+        }, 500);
+        // Remove ref from URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+    handleReferralFromURL();
 
     // ========== KUIS LOGIC ==========
     const quizData = {
@@ -230,7 +711,7 @@
     const quizFeedback = document.getElementById("quiz-feedback");
     const quizNext = document.getElementById("quiz-next");
     const quizLevelLabel = document.getElementById("quiz-level-label");
-    const quizScoreDisplay = document.getElementById("quiz-score");
+    const quizPointsDisplay = document.getElementById("quiz-points-display");
 
     function loadQuiz(level) {
       currentLevel = level;
@@ -238,7 +719,7 @@
       quizAnswered = false;
       const data = quizData[level];
       quizLevelLabel.textContent = data.label;
-      quizScoreDisplay.textContent = `⭐ Poin: ${quizScore}`;
+      quizPointsDisplay.textContent = quizScore;
       renderQuestion();
     }
 
@@ -249,6 +730,9 @@
         quizOptions.innerHTML = "";
         quizFeedback.textContent = `Total poin: ${quizScore}`;
         quizNext.classList.add("hidden");
+        let currentPoints = parseInt(localStorage.getItem('rewardPoints')) || 0;
+        currentPoints += quizScore;
+        localStorage.setItem('rewardPoints', currentPoints);
         return;
       }
 
@@ -284,11 +768,13 @@
         quizScore += 10;
         quizFeedback.textContent = "✅ Benar! +10 poin";
         quizFeedback.classList.add("text-green-600");
+        quizFeedback.classList.remove("text-red-600");
       } else {
         quizFeedback.textContent = "❌ Salah. Jawaban: " + options[correct].textContent;
         quizFeedback.classList.add("text-red-600");
+        quizFeedback.classList.remove("text-green-600");
       }
-      quizScoreDisplay.textContent = `⭐ Poin: ${quizScore}`;
+      quizPointsDisplay.textContent = quizScore;
       quizNext.classList.remove("hidden");
     }
 
