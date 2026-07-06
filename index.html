@@ -10,12 +10,36 @@
   <style>
     body { font-family: "Inter", sans-serif; }
     html { scroll-behavior: smooth; }
-    .section-card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .section-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .animate-fadeInUp { animation: fadeInUp 0.6s ease forwards; }
+    .animate-pulse-slow { animation: pulse 2s ease-in-out infinite; }
+    
+    /* Card hover effects */
+    .feature-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+    }
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(217, 179, 16, 0.15);
+    }
+    .feature-card:hover .feature-icon {
+      background: #d9b310;
+      color: white;
+      transform: scale(1.1) rotate(-5deg);
     }
     .feature-icon {
       width: 64px;
@@ -27,22 +51,34 @@
       justify-content: center;
       font-size: 28px;
       color: #d9b310;
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .feature-card:hover .feature-icon {
-      background: #d9b310;
-      color: white;
-      transform: scale(1.05);
-    }
+    
+    /* Button styles */
     .btn-gold {
-      background: #d9b310;
+      background: linear-gradient(135deg, #d9b310, #b5940e);
       color: white;
       transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
     .btn-gold:hover {
-      background: #b5940e;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 16px rgba(217, 179, 16, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(217, 179, 16, 0.35);
+    }
+    .btn-gold::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: rotate(45deg);
+      transition: all 0.6s ease;
+    }
+    .btn-gold:hover::after {
+      left: 100%;
     }
     .btn-outline-gold {
       border: 2px solid #d9b310;
@@ -52,30 +88,48 @@
     .btn-outline-gold:hover {
       background: #d9b310;
       color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px rgba(217, 179, 16, 0.2);
     }
+    
     /* Referral styles */
     .referral-code {
       background: linear-gradient(135deg, #fff8d6, #fff3c4);
       border: 2px dashed #d9b310;
-      border-radius: 12px;
-      padding: 20px;
+      border-radius: 16px;
+      padding: 24px;
       text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .referral-code::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(217,179,16,0.05) 0%, transparent 70%);
+      animation: shimmer 3s ease-in-out infinite;
     }
     .referral-code .code {
-      font-size: 32px;
+      font-size: 36px;
       font-weight: 800;
       color: #d9b310;
-      letter-spacing: 4px;
-      font-family: monospace;
+      letter-spacing: 6px;
+      font-family: 'Courier New', monospace;
+      position: relative;
+      z-index: 1;
     }
     .referral-badge {
       display: inline-block;
-      background: #d9b310;
+      background: linear-gradient(135deg, #d9b310, #b5940e);
       color: white;
-      padding: 2px 14px;
+      padding: 4px 16px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
+      box-shadow: 0 4px 12px rgba(217, 179, 16, 0.3);
     }
     .copy-tooltip {
       position: fixed;
@@ -84,107 +138,215 @@
       transform: translateX(-50%);
       background: #1a1a1a;
       color: white;
-      padding: 10px 24px;
-      border-radius: 8px;
+      padding: 12px 28px;
+      border-radius: 12px;
       font-size: 14px;
       z-index: 999;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.4s ease, transform 0.4s ease;
       pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     }
     .copy-tooltip.show {
       opacity: 1;
+      transform: translateX(-50%) translateY(-10px);
     }
     .referral-stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
       gap: 12px;
     }
     .referral-stats .stat-item {
       background: white;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 16px 12px;
+      border-radius: 12px;
       text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: all 0.3s ease;
+    }
+    .referral-stats .stat-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
     }
     .referral-stats .stat-item .number {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 700;
       color: #d9b310;
+      transition: all 0.3s ease;
+    }
+    .referral-stats .stat-item:hover .number {
+      transform: scale(1.1);
     }
     .referral-stats .stat-item .label {
       font-size: 11px;
       color: #888;
-      margin-top: 2px;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+    
+    /* Quiz styles */
+    .quiz-option {
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .quiz-option:hover:not(.disabled) {
+      transform: scale(1.02);
+      border-color: #d9b310;
+      box-shadow: 0 4px 12px rgba(217, 179, 16, 0.15);
+    }
+    .quiz-option.correct {
+      background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+      color: white !important;
+      border-color: #16a34a !important;
+    }
+    .quiz-option.correct::after {
+      content: '✓';
+      position: absolute;
+      right: 16px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .quiz-option.wrong {
+      background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+      color: white !important;
+      border-color: #dc2626 !important;
+    }
+    .quiz-option.wrong::after {
+      content: '✗';
+      position: absolute;
+      right: 16px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .quiz-option.disabled {
+      pointer-events: none;
+      opacity: 0.7;
     }
     .level-badge {
       display: inline-block;
-      padding: 2px 12px;
+      padding: 2px 14px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
+      transition: all 0.3s ease;
     }
     .level-1 { background: #dbeafe; color: #1e40af; }
     .level-2 { background: #d1fae5; color: #065f46; }
     .level-3 { background: #fef3c7; color: #92400e; }
     .level-4 { background: #fde68a; color: #b45309; }
     .level-5 { background: #fecaca; color: #991b1b; }
-    .quiz-option {
-      transition: all 0.2s ease;
-      cursor: pointer;
+    
+    .level-btn {
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
     }
-    .quiz-option:hover { transform: scale(1.02); }
-    .quiz-option.correct { background-color: #22c55e !important; color: white; }
-    .quiz-option.wrong { background-color: #ef4444 !important; color: white; }
-    .quiz-option.disabled { pointer-events: none; opacity: 0.7; }
+    .level-btn:hover:not(.active) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .level-btn.active {
+      background: linear-gradient(135deg, #d9b310, #b5940e) !important;
+      color: white !important;
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(217, 179, 16, 0.3);
+    }
+    .level-btn.active .level-badge {
+      background: rgba(255,255,255,0.3);
+      color: white;
+    }
+    
+    /* Community styles */
     .community-post {
-      border-left: 3px solid #d9b310;
+      border-left: 4px solid #d9b310;
       padding-left: 16px;
       margin-bottom: 16px;
+      transition: all 0.3s ease;
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .community-post:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     }
     .community-post:last-child { margin-bottom: 0; }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #d9b310; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #b5940e; }
+    
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      color: white;
+      font-weight: 500;
+      z-index: 2000;
+      transform: translateX(120%);
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+      max-width: 400px;
+    }
+    .toast.show {
+      transform: translateX(0);
+    }
+    .toast.success { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .toast.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .toast.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .toast.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
   </style>
 </head>
 <body class="bg-[#fff9e6] min-h-screen flex flex-col">
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast"></div>
 
   <!-- COPY TOOLTIP -->
   <div class="copy-tooltip" id="copyTooltip">✅ Kode referral disalin!</div>
 
   <!-- NAVBAR -->
-  <nav class="bg-white shadow-md sticky top-0 z-50">
+  <nav class="bg-white shadow-md sticky top-0 z-50 transition-shadow duration-300">
     <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-      <a class="text-2xl font-extrabold text-[#d9b310] flex items-center gap-2" href="index.html">
+      <a class="text-2xl font-extrabold text-[#d9b310] flex items-center gap-2 hover:scale-105 transition-transform" href="index.html">
         <span>RasaNusantara</span>
       </a>
-      <button aria-label="Toggle menu" class="md:hidden text-[#d9b310] border border-[#d9b310] p-2 rounded-md" id="menu-toggle">
+      <button aria-label="Toggle menu" class="md:hidden text-[#d9b310] border border-[#d9b310] p-2 rounded-md hover:bg-[#d9b310] hover:text-white transition" id="menu-toggle">
         <i class="fas fa-bars text-xl"></i>
       </button>
       <ul class="hidden md:flex flex-wrap gap-6 text-[#1a1a1a] font-semibold text-sm sm:text-base items-center" id="menu">
-        <li><a class="hover:text-[#d9b310]" href="#beranda">Beranda</a></li>
-        <li><a class="hover:text-[#d9b310]" href="marketplace.html">Marketplace</a></li>
-        <li><a class="hover:text-[#d9b310]" href="#kuis">Kuis</a></li>
-        <li><a class="hover:text-[#d9b310]" href="ai-sejarah.html">AI Sejarah</a></li>
-        <li><a class="hover:text-[#d9b310]" href="#komunitas">Komunitas</a></li>
-        <li><a class="hover:text-[#d9b310]" href="reward.html">Reward</a></li>
-        <li><a class="hover:text-[#d9b310] text-[#d9b310]" href="#afiliasi">Afiliasi</a></li>
-        <li><a class="hover:text-[#d9b310]" href="#premium">Premium</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="#beranda">Beranda</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="marketplace.html">Marketplace</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="#kuis">Kuis</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="ai-sejarah.html">AI Sejarah</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="#komunitas">Komunitas</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="reward.html">Reward</a></li>
+        <li><a class="hover:text-[#d9b310] text-[#d9b310] transition-colors" href="#afiliasi">Afiliasi</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="#premium">Premium</a></li>
         <li class="ml-auto flex gap-3">
-          <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
-          <button class="border border-[#d9b310] text-[#d9b310] px-4 py-2 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition">Masuk</button>
+          <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition transform hover:scale-105">Daftar UMKM</button>
+          <button class="border border-[#d9b310] text-[#d9b310] px-4 py-2 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition transform hover:scale-105">Masuk</button>
         </li>
       </ul>
     </div>
     <!-- Mobile menu -->
     <div class="md:hidden bg-white px-6 pb-4 hidden" id="mobile-menu">
       <ul class="flex flex-col gap-4 text-[#1a1a1a] font-semibold text-base">
-        <li><a class="hover:text-[#d9b310]" href="#beranda" onclick="closeMobileMenu()">Beranda</a></li>
-        <li><a class="hover:text-[#d9b310]" href="marketplace.html" onclick="closeMobileMenu()">Marketplace</a></li>
-        <li><a class="hover:text-[#d9b310]" href="#kuis" onclick="closeMobileMenu()">Kuis</a></li>
-        <li><a class="hover:text-[#d9b310]" href="ai-sejarah.html" onclick="closeMobileMenu()">AI Sejarah</a></li>
-        <li><a class="hover:text-[#d9b310]" href="#komunitas" onclick="closeMobileMenu()">Komunitas</a></li>
-        <li><a class="hover:text-[#d9b310]" href="reward.html" onclick="closeMobileMenu()">Reward</a></li>
-        <li><a class="hover:text-[#d9b310]" href="#afiliasi" onclick="closeMobileMenu()">Afiliasi</a></li>
-        <li><a class="hover:text-[#d9b310]" href="#premium" onclick="closeMobileMenu()">Premium</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="#beranda" onclick="closeMobileMenu()">Beranda</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="marketplace.html" onclick="closeMobileMenu()">Marketplace</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="#kuis" onclick="closeMobileMenu()">Kuis</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="ai-sejarah.html" onclick="closeMobileMenu()">AI Sejarah</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="#komunitas" onclick="closeMobileMenu()">Komunitas</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="reward.html" onclick="closeMobileMenu()">Reward</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="#afiliasi" onclick="closeMobileMenu()">Afiliasi</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="#premium" onclick="closeMobileMenu()">Premium</a></li>
       </ul>
       <div class="flex flex-col gap-3 mt-4">
         <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
@@ -194,32 +356,51 @@
   </nav>
 
   <!-- ========== HERO SECTION ========== -->
-  <section class="bg-white max-w-7xl mx-auto mt-8 rounded-lg shadow-md px-6 py-12 flex flex-col md:flex-row items-center gap-8" id="beranda">
+  <section class="bg-white max-w-7xl mx-auto mt-8 rounded-2xl shadow-lg px-6 py-12 flex flex-col md:flex-row items-center gap-8 animate-fadeInUp" id="beranda">
     <div class="md:w-1/2">
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-[#d9b310] mb-4 leading-tight">
+      <span class="inline-block bg-[#d9b310]/10 text-[#d9b310] px-4 py-1 rounded-full text-sm font-semibold mb-4">
+        <i class="fas fa-utensils mr-1"></i> Kuliner Nusantara
+      </span>
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#d9b310] mb-4 leading-tight">
         Jelajahi & Dukung Kuliner <span class="text-[#b5940e]">Semarang</span>
       </h1>
-      <p class="text-[#333333] text-base sm:text-lg mb-6">
+      <p class="text-[#333333] text-base sm:text-lg mb-6 leading-relaxed">
         Temukan makanan khas Semarang, ikuti kuis seru, tanyakan sejarah kuliner pada AI, dan bergabung dengan komunitas pecinta kuliner!
       </p>
       <div class="flex flex-wrap gap-4">
-        <a class="bg-[#d9b310] text-white px-6 py-3 rounded-md font-semibold hover:bg-[#b5940e] transition" href="marketplace.html">
-          Mulai Jelajah
+        <a class="btn-gold px-6 py-3 rounded-md font-semibold inline-flex items-center gap-2" href="marketplace.html">
+          <i class="fas fa-store"></i> Mulai Jelajah
         </a>
-        <a class="border border-[#d9b310] text-[#d9b310] px-6 py-3 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition" href="#afiliasi">
-          Jadi Afiliasi
+        <a class="btn-outline-gold px-6 py-3 rounded-md font-semibold inline-flex items-center gap-2" href="#afiliasi">
+          <i class="fas fa-handshake"></i> Jadi Afiliasi
         </a>
+      </div>
+      <div class="flex items-center gap-6 mt-6 text-sm text-gray-500">
+        <span><i class="fas fa-check-circle text-[#d9b310] mr-1"></i> 100+ UMKM</span>
+        <span><i class="fas fa-check-circle text-[#d9b310] mr-1"></i> 500+ Produk</span>
+        <span><i class="fas fa-check-circle text-[#d9b310] mr-1"></i> 10K+ Pengguna</span>
       </div>
     </div>
     <div class="md:w-1/2 w-full">
-      <img alt="Kuliner khas Semarang" class="rounded-lg shadow-lg w-full object-cover max-h-[400px]" src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop" />
+      <div class="relative">
+        <img alt="Kuliner khas Semarang" class="rounded-2xl shadow-2xl w-full object-cover max-h-[400px]" src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop" />
+        <div class="absolute -bottom-4 -right-4 bg-white rounded-xl shadow-lg p-3 flex items-center gap-3 animate-pulse-slow">
+          <div class="w-10 h-10 bg-[#d9b310] rounded-full flex items-center justify-center text-white">
+            <i class="fas fa-star"></i>
+          </div>
+          <div>
+            <p class="font-bold text-sm">4.9/5</p>
+            <p class="text-xs text-gray-500">Rating Pengguna</p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- ========== PROGRAM AFILIASI dengan REFERRAL ========== -->
-  <section class="max-w-7xl mx-auto mt-12 px-6 py-10 bg-white rounded-lg shadow-md" id="afiliasi">
+  <section class="max-w-7xl mx-auto mt-12 px-6 py-10 bg-white rounded-2xl shadow-lg animate-fadeInUp" id="afiliasi" style="animation-delay: 0.2s;">
     <div class="text-center mb-8">
-      <span class="inline-block bg-[#fff8d6] text-[#d9b310] px-4 py-1 rounded-full text-sm font-semibold mb-3">
+      <span class="inline-block bg-[#fff8d6] text-[#d9b310] px-4 py-1 rounded-full text-sm font-semibold mb-3 animate-pulse-slow">
         <i class="fas fa-rocket mr-1"></i> Program Mitra
       </span>
       <h2 class="text-3xl font-bold text-[#d9b310]">Program Afiliasi & Referral</h2>
@@ -237,7 +418,7 @@
             class="rounded-xl w-full object-cover max-h-[280px]" 
             src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop" 
           />
-          <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg">
+          <div class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-lg">
             <div class="flex items-center justify-between">
               <div>
                 <span class="text-xs text-gray-500">Komisi Mingguan</span>
@@ -265,13 +446,17 @@
             <div class="number" id="activeReferrals">0</div>
             <div class="label">Aktif Bulan Ini</div>
           </div>
+          <div class="stat-item">
+            <div class="number" id="referralRank">#1</div>
+            <div class="label">Peringkat</div>
+          </div>
         </div>
       </div>
 
       <!-- Keunggulan + Kode Referral -->
       <div class="lg:w-1/2 w-full">
         <div class="space-y-4">
-          <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-[#fff8d6] transition">
+          <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-[#fff8d6] transition group">
             <div class="feature-icon flex-shrink-0">
               <i class="fas fa-gift"></i>
             </div>
@@ -280,7 +465,7 @@
               <p class="text-sm text-[#555555]">Daftar gratis dan dapatkan link afiliasi unik untuk setiap produk.</p>
             </div>
           </div>
-          <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-[#fff8d6] transition">
+          <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-[#fff8d6] transition group">
             <div class="feature-icon flex-shrink-0">
               <i class="fas fa-users"></i>
             </div>
@@ -289,7 +474,7 @@
               <p class="text-sm text-[#555555]">Ajak teman bergabung, dapatkan bonus <span class="font-bold text-[#d9b310]">Rp 25.000</span> per referral aktif!</p>
             </div>
           </div>
-          <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-[#fff8d6] transition">
+          <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-[#fff8d6] transition group">
             <div class="feature-icon flex-shrink-0">
               <i class="fas fa-chart-line"></i>
             </div>
@@ -298,7 +483,7 @@
               <p class="text-sm text-[#555555]">Pantau klik, penjualan, dan komisi melalui dashboard afiliasi.</p>
             </div>
           </div>
-          <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-[#fff8d6] transition">
+          <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-[#fff8d6] transition group">
             <div class="feature-icon flex-shrink-0">
               <i class="fas fa-coins"></i>
             </div>
@@ -319,22 +504,25 @@
               <i class="fas fa-star mr-1"></i> Aktif
             </span>
           </div>
-          <div class="flex items-center justify-center gap-4 mt-3">
+          <div class="flex items-center justify-center gap-4 mt-3 flex-wrap">
             <span class="code" id="referralCode">RASA-7X9K2</span>
-            <button onclick="copyReferralCode()" class="bg-[#d9b310] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#b5940e] transition flex items-center gap-2">
+            <button onclick="copyReferralCode()" class="bg-[#d9b310] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#b5940e] transition flex items-center gap-2 transform hover:scale-105">
               <i class="fas fa-copy"></i> Salin
             </button>
           </div>
-          <div class="flex items-center justify-center gap-4 mt-3 text-sm text-gray-500">
+          <div class="flex items-center justify-center gap-4 mt-3 text-sm text-gray-500 flex-wrap">
             <span><i class="fas fa-share-alt mr-1"></i> Bagikan ke teman</span>
             <span><i class="fas fa-gift mr-1"></i> Bonus Rp 25.000/referral</span>
           </div>
-          <div class="flex flex-wrap justify-center gap-2 mt-3">
-            <a href="#" class="text-[#25D366] hover:opacity-70 text-xl"><i class="fab fa-whatsapp"></i></a>
-            <a href="#" class="text-[#1DA1F2] hover:opacity-70 text-xl"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="text-[#E1306C] hover:opacity-70 text-xl"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="text-[#0A66C2] hover:opacity-70 text-xl"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#" class="text-[#4267B2] hover:opacity-70 text-xl"><i class="fab fa-facebook-f"></i></a>
+          <div class="flex flex-wrap justify-center gap-3 mt-3">
+            <a href="#" class="text-[#25D366] hover:opacity-70 text-xl transition transform hover:scale-110"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" class="text-[#1DA1F2] hover:opacity-70 text-xl transition transform hover:scale-110"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-[#E1306C] hover:opacity-70 text-xl transition transform hover:scale-110"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-[#0A66C2] hover:opacity-70 text-xl transition transform hover:scale-110"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="text-[#4267B2] hover:opacity-70 text-xl transition transform hover:scale-110"><i class="fab fa-facebook-f"></i></a>
+          </div>
+          <div class="mt-3 text-xs text-gray-400">
+            <i class="fas fa-info-circle mr-1"></i> Kode berlaku selamanya. Setiap referral aktif mendapat bonus Rp 25.000
           </div>
         </div>
 
@@ -351,19 +539,19 @@
 
     <!-- Statistik Afiliasi -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-gray-200">
-      <div class="text-center">
+      <div class="text-center hover:transform hover:scale-105 transition">
         <div class="text-2xl font-bold text-[#d9b310]">2.847</div>
         <div class="text-sm text-gray-500">Total Afiliasi</div>
       </div>
-      <div class="text-center">
+      <div class="text-center hover:transform hover:scale-105 transition">
         <div class="text-2xl font-bold text-[#d9b310]">Rp 12,5M</div>
         <div class="text-sm text-gray-500">Total Komisi</div>
       </div>
-      <div class="text-center">
+      <div class="text-center hover:transform hover:scale-105 transition">
         <div class="text-2xl font-bold text-[#d9b310]">4.2K</div>
         <div class="text-sm text-gray-500">Produk Terjual</div>
       </div>
-      <div class="text-center">
+      <div class="text-center hover:transform hover:scale-105 transition">
         <div class="text-2xl font-bold text-[#d9b310]">98%</div>
         <div class="text-sm text-gray-500">Kepuasan Mitra</div>
       </div>
@@ -376,18 +564,18 @@
         Cara Kerja Program Referral
       </h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-        <div class="bg-[#fff8d6] p-4 rounded-lg">
-          <div class="w-10 h-10 bg-[#d9b310] text-white rounded-full flex items-center justify-center mx-auto mb-2 font-bold">1</div>
+        <div class="bg-[#fff8d6] p-5 rounded-xl hover:shadow-lg transition transform hover:scale-105">
+          <div class="w-12 h-12 bg-[#d9b310] text-white rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-lg shadow-lg">1</div>
           <h4 class="font-semibold">Dapatkan Kode</h4>
           <p class="text-sm text-gray-500">Setelah daftar, kamu mendapat kode referral unik</p>
         </div>
-        <div class="bg-[#fff8d6] p-4 rounded-lg">
-          <div class="w-10 h-10 bg-[#d9b310] text-white rounded-full flex items-center justify-center mx-auto mb-2 font-bold">2</div>
+        <div class="bg-[#fff8d6] p-5 rounded-xl hover:shadow-lg transition transform hover:scale-105">
+          <div class="w-12 h-12 bg-[#d9b310] text-white rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-lg shadow-lg">2</div>
           <h4 class="font-semibold">Bagikan Link</h4>
           <p class="text-sm text-gray-500">Sebarkan kode ke teman & media sosial</p>
         </div>
-        <div class="bg-[#fff8d6] p-4 rounded-lg">
-          <div class="w-10 h-10 bg-[#d9b310] text-white rounded-full flex items-center justify-center mx-auto mb-2 font-bold">3</div>
+        <div class="bg-[#fff8d6] p-5 rounded-xl hover:shadow-lg transition transform hover:scale-105">
+          <div class="w-12 h-12 bg-[#d9b310] text-white rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-lg shadow-lg">3</div>
           <h4 class="font-semibold">Dapatkan Bonus</h4>
           <p class="text-sm text-gray-500">Setiap teman aktif, kamu dapat <span class="font-bold text-[#d9b310]">Rp 25.000</span></p>
         </div>
@@ -396,7 +584,7 @@
   </section>
 
   <!-- ========== FITUR PREMIUM ========== -->
-  <section class="max-w-7xl mx-auto mt-12 px-6 py-10 bg-white rounded-lg shadow-md" id="premium">
+  <section class="max-w-7xl mx-auto mt-12 px-6 py-10 bg-white rounded-2xl shadow-lg animate-fadeInUp" id="premium" style="animation-delay: 0.4s;">
     <div class="text-center mb-8">
       <span class="inline-block bg-[#d9b310]/10 text-[#d9b310] px-4 py-1 rounded-full text-sm font-semibold mb-3">
         <i class="fas fa-crown mr-1"></i> Untuk Penjual UMKM
@@ -409,7 +597,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- Card 1 -->
-      <div class="feature-card bg-[#fff8d6] rounded-xl p-6 text-center hover:shadow-lg transition">
+      <div class="feature-card bg-[#fff8d6] rounded-xl p-6 text-center">
         <div class="feature-icon mx-auto mb-4">
           <i class="fas fa-chart-pie"></i>
         </div>
@@ -423,7 +611,7 @@
       </div>
 
       <!-- Card 2 -->
-      <div class="feature-card bg-[#fff8d6] rounded-xl p-6 text-center hover:shadow-lg transition">
+      <div class="feature-card bg-[#fff8d6] rounded-xl p-6 text-center">
         <div class="feature-icon mx-auto mb-4">
           <i class="fas fa-bolt"></i>
         </div>
@@ -437,7 +625,7 @@
       </div>
 
       <!-- Card 3 -->
-      <div class="feature-card bg-[#fff8d6] rounded-xl p-6 text-center hover:shadow-lg transition">
+      <div class="feature-card bg-[#fff8d6] rounded-xl p-6 text-center">
         <div class="feature-icon mx-auto mb-4">
           <i class="fas fa-graduation-cap"></i>
         </div>
@@ -453,7 +641,7 @@
 
     <!-- CTA Premium -->
     <div class="mt-8 text-center">
-      <div class="bg-[#d9b310]/5 rounded-xl p-6 max-w-2xl mx-auto">
+      <div class="bg-gradient-to-r from-[#d9b310]/5 to-[#b5940e]/5 rounded-xl p-6 max-w-2xl mx-auto">
         <p class="text-sm text-gray-600 mb-3">
           <i class="fas fa-gem text-[#d9b310] mr-1"></i>
           Mulai dari <span class="font-bold text-[#d9b310]">Rp 99.000/bulan</span>
@@ -466,79 +654,120 @@
     </div>
   </section>
 
-  <!-- ========== KUIS SECTION ========== -->
-  <section class="max-w-7xl mx-auto mt-12 px-6 py-8 bg-white rounded-lg shadow-md" id="kuis">
-    <h2 class="text-2xl sm:text-3xl font-bold text-[#d9b310] mb-2 text-center">
-      🧠 Kuis Kuliner Semarang
-    </h2>
-    <p class="text-center max-w-3xl mx-auto text-[#555555] mb-6 text-sm sm:text-base">
-      Uji pengetahuanmu tentang kuliner Semarang! Pilih level, jawab dengan benar, kumpulkan poin, dan tukar di Reward.
-    </p>
+  <!-- ========== KUIS SECTION (Enhanced) ========== -->
+  <section class="max-w-7xl mx-auto mt-12 px-6 py-8 bg-white rounded-2xl shadow-lg animate-fadeInUp" id="kuis" style="animation-delay: 0.6s;">
+    <div class="text-center mb-6">
+      <span class="inline-block bg-[#d9b310]/10 text-[#d9b310] px-4 py-1 rounded-full text-sm font-semibold mb-3">
+        <i class="fas fa-brain mr-1"></i> Uji Pengetahuan
+      </span>
+      <h2 class="text-2xl sm:text-3xl font-bold text-[#d9b310]">🧠 Kuis Kuliner Semarang</h2>
+      <p class="text-center max-w-3xl mx-auto text-[#555555] text-sm sm:text-base">
+        Uji pengetahuanmu tentang kuliner Semarang! Pilih level, jawab dengan benar, kumpulkan poin, dan tukar di Reward.
+      </p>
+    </div>
 
     <!-- Level Selector -->
     <div class="flex flex-wrap justify-center gap-3 mb-6">
-      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="1">Level 1 <span class="level-badge level-1 ml-1">Mudah</span></button>
-      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="2">Level 2 <span class="level-badge level-2 ml-1">Sedang</span></button>
-      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="3">Level 3 <span class="level-badge level-3 ml-1">Menantang</span></button>
-      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="4">Level 4 <span class="level-badge level-4 ml-1">Sulit</span></button>
-      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="5">Level 5 <span class="level-badge level-5 ml-1">Expert</span></button>
+      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="1">
+        Level 1 <span class="level-badge level-1 ml-1">Mudah</span>
+      </button>
+      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="2">
+        Level 2 <span class="level-badge level-2 ml-1">Sedang</span>
+      </button>
+      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="3">
+        Level 3 <span class="level-badge level-3 ml-1">Menantang</span>
+      </button>
+      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="4">
+        Level 4 <span class="level-badge level-4 ml-1">Sulit</span>
+      </button>
+      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="5">
+        Level 5 <span class="level-badge level-5 ml-1">Expert</span>
+      </button>
     </div>
 
     <!-- Quiz Container -->
-    <div id="quiz-container" class="max-w-2xl mx-auto bg-[#fff8d6] p-6 rounded-lg shadow-inner">
+    <div id="quiz-container" class="max-w-2xl mx-auto bg-[#fff8d6] p-6 rounded-xl shadow-inner">
       <div id="quiz-status" class="flex justify-between items-center mb-4">
         <span id="quiz-level-label" class="font-bold text-[#d9b310]">Level 1 - Mudah</span>
         <span id="quiz-score" class="font-bold">⭐ Poin: <span id="quiz-points-display">0</span></span>
       </div>
+      <div id="quiz-progress" class="w-full bg-gray-200 rounded-full h-2 mb-4">
+        <div id="quiz-progress-bar" class="bg-[#d9b310] h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
       <div id="quiz-question" class="text-lg font-semibold mb-4">Klik salah satu level di atas untuk mulai kuis!</div>
       <div id="quiz-options" class="grid grid-cols-1 gap-3"></div>
       <div id="quiz-feedback" class="mt-4 text-center font-medium"></div>
-      <button id="quiz-next" class="mt-4 bg-[#d9b310] text-white px-6 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition hidden w-full">Soal Selanjutnya →</button>
+      <button id="quiz-next" class="mt-4 bg-[#d9b310] text-white px-6 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition hidden w-full transform hover:scale-105">Soal Selanjutnya →</button>
+      <button id="quiz-reset" class="mt-2 text-sm text-gray-400 hover:text-gray-600 transition hidden w-full">Reset Kuis</button>
     </div>
   </section>
 
   <!-- ========== KOMUNITAS SECTION ========== -->
-  <section class="max-w-7xl mx-auto mt-12 px-6 py-8 bg-white rounded-lg shadow-md" id="komunitas">
-    <h2 class="text-2xl sm:text-3xl font-bold text-[#d9b310] mb-2 text-center">
-      💬 Komunitas Kuliner Semarang
-    </h2>
-    <p class="text-center max-w-3xl mx-auto text-[#555555] mb-6 text-sm sm:text-base">
-      Tempat diskusi dan berbagi cerita tentang kuliner Semarang. Yuk, saling rekomendasi dan berkenalan!
-    </p>
+  <section class="max-w-7xl mx-auto mt-12 px-6 py-8 bg-white rounded-2xl shadow-lg animate-fadeInUp" id="komunitas" style="animation-delay: 0.8s;">
+    <div class="text-center mb-6">
+      <span class="inline-block bg-[#d9b310]/10 text-[#d9b310] px-4 py-1 rounded-full text-sm font-semibold mb-3">
+        <i class="fas fa-comments mr-1"></i> Diskusi
+      </span>
+      <h2 class="text-2xl sm:text-3xl font-bold text-[#d9b310]">💬 Komunitas Kuliner Semarang</h2>
+      <p class="text-center max-w-3xl mx-auto text-[#555555] text-sm sm:text-base">
+        Tempat diskusi dan berbagi cerita tentang kuliner Semarang. Yuk, saling rekomendasi dan berkenalan!
+      </p>
+    </div>
 
     <div class="max-w-4xl mx-auto">
       <!-- Form posting -->
-      <div class="bg-[#fff8d6] p-4 rounded-lg mb-6">
-        <textarea id="community-input" rows="2" placeholder="Bagikan cerita, rekomendasi, atau pertanyaan seputar kuliner Semarang..." class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#d9b310]"></textarea>
-        <div class="flex justify-end mt-2">
-          <button id="community-post-btn" class="bg-[#d9b310] text-white px-6 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">
-            <i class="fas fa-paper-plane mr-2"></i> Posting
-          </button>
+      <div class="bg-[#fff8d6] p-4 rounded-xl mb-6">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 bg-[#d9b310] rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="flex-grow">
+            <textarea id="community-input" rows="2" placeholder="Bagikan cerita, rekomendasi, atau pertanyaan seputar kuliner Semarang..." class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#d9b310] transition"></textarea>
+            <div class="flex justify-end mt-2">
+              <button id="community-post-btn" class="bg-[#d9b310] text-white px-6 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition transform hover:scale-105">
+                <i class="fas fa-paper-plane mr-2"></i> Posting
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Daftar postingan -->
       <div id="community-posts" class="space-y-4">
-        <div class="community-post bg-white p-4 rounded-lg shadow-sm">
+        <div class="community-post">
           <div class="flex items-center gap-2 mb-1">
             <span class="font-bold text-[#d9b310]">@lumpia_lover</span>
             <span class="text-xs text-gray-500">2 jam lalu</span>
           </div>
           <p class="text-gray-800">Rekomendasi Lumpia terenak di Semarang: Lumpia Gang Lombok! Isiannya juicy banget 🤤</p>
           <div class="flex gap-4 mt-2 text-sm text-gray-500">
-            <span><i class="far fa-heart mr-1"></i> 12</span>
-            <span><i class="far fa-comment mr-1"></i> 5</span>
+            <span class="hover:text-[#d9b310] transition cursor-pointer"><i class="far fa-heart mr-1"></i> 12</span>
+            <span class="hover:text-[#d9b310] transition cursor-pointer"><i class="far fa-comment mr-1"></i> 5</span>
+            <span class="hover:text-[#d9b310] transition cursor-pointer"><i class="far fa-share-square mr-1"></i> Bagikan</span>
           </div>
         </div>
-        <div class="community-post bg-white p-4 rounded-lg shadow-sm">
+        <div class="community-post">
           <div class="flex items-center gap-2 mb-1">
             <span class="font-bold text-[#d9b310]">@wingko_enthusiast</span>
             <span class="text-xs text-gray-500">5 jam lalu</span>
           </div>
           <p class="text-gray-800">Ada yang tahu sejarah Wingko Babat? Katanya dulu dibawa oleh pedagang dari Babat, Jawa Timur, lalu populer di Semarang.</p>
           <div class="flex gap-4 mt-2 text-sm text-gray-500">
-            <span><i class="far fa-heart mr-1"></i> 8</span>
-            <span><i class="far fa-comment mr-1"></i> 3</span>
+            <span class="hover:text-[#d9b310] transition cursor-pointer"><i class="far fa-heart mr-1"></i> 8</span>
+            <span class="hover:text-[#d9b310] transition cursor-pointer"><i class="far fa-comment mr-1"></i> 3</span>
+            <span class="hover:text-[#d9b310] transition cursor-pointer"><i class="far fa-share-square mr-1"></i> Bagikan</span>
+          </div>
+        </div>
+        <div class="community-post">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="font-bold text-[#d9b310]">@tahu_gimbal_fan</span>
+            <span class="text-xs text-gray-500">8 jam lalu</span>
+          </div>
+          <p class="text-gray-800">Tahu Gimbal favorit nih! Yang paling enak di daerah Simpang Lima. Siapa yang udah coba? 😋</p>
+          <div class="flex gap-4 mt-2 text-sm text-gray-500">
+            <span class="hover:text-[#d9b310] transition cursor-pointer"><i class="far fa-heart mr-1"></i> 15</span>
+            <span class="hover:text-[#d9b310] transition cursor-pointer"><i class="far fa-comment mr-1"></i> 7</span>
+            <span class="hover:text-[#d9b310] transition cursor-pointer"><i class="far fa-share-square mr-1"></i> Bagikan</span>
           </div>
         </div>
       </div>
@@ -550,9 +779,10 @@
     <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-sm text-center md:text-left">© 2025 RasaNusantara. Nikmati kuliner Semarang!</p>
       <div class="flex gap-6 text-lg">
-        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="hover:text-[#b5940e] transition transform hover:scale-110"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="hover:text-[#b5940e] transition transform hover:scale-110"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="hover:text-[#b5940e] transition transform hover:scale-110"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="hover:text-[#b5940e] transition transform hover:scale-110"><i class="fab fa-youtube"></i></a>
       </div>
     </div>
   </footer>
@@ -570,8 +800,19 @@
       menuToggle.innerHTML = '<i class="fas fa-bars text-xl"></i>';
     }
 
+    // ========== TOAST SYSTEM ==========
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast ' + type;
+      setTimeout(() => toast.classList.add('show'), 10);
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
     // ========== REFERRAL SYSTEM ==========
-    // Generate random referral code
     function generateReferralCode() {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let code = 'RASA-';
@@ -581,7 +822,6 @@
       return code;
     }
 
-    // Get or create referral code
     let referralCode = localStorage.getItem('referralCode');
     if (!referralCode) {
       referralCode = generateReferralCode();
@@ -589,7 +829,6 @@
     }
     document.getElementById('referralCode').textContent = referralCode;
 
-    // Get referral stats from localStorage
     let referralData = JSON.parse(localStorage.getItem('referralData')) || {
       total: 0,
       bonus: 0,
@@ -600,43 +839,42 @@
       document.getElementById('totalReferrals').textContent = referralData.total;
       document.getElementById('referralBonus').textContent = 'Rp ' + referralData.bonus.toLocaleString();
       document.getElementById('activeReferrals').textContent = referralData.active;
+      
+      // Update rank berdasarkan total referral
+      let rank = '#1';
+      if (referralData.total >= 10) rank = '#1';
+      else if (referralData.total >= 5) rank = '#2';
+      else if (referralData.total >= 3) rank = '#3';
+      else rank = '#' + (referralData.total + 1);
+      document.getElementById('referralRank').textContent = rank;
     }
     updateReferralStats();
 
-    // Copy referral code
     function copyReferralCode() {
       const code = document.getElementById('referralCode').textContent;
       navigator.clipboard.writeText(code).then(() => {
         const tooltip = document.getElementById('copyTooltip');
         tooltip.classList.add('show');
+        showToast('✅ Kode referral disalin!', 'success');
         setTimeout(() => {
           tooltip.classList.remove('show');
         }, 2000);
       }).catch(() => {
-        // Fallback
         const input = document.createElement('input');
         input.value = code;
         document.body.appendChild(input);
         input.select();
         document.execCommand('copy');
         document.body.removeChild(input);
-        const tooltip = document.getElementById('copyTooltip');
-        tooltip.classList.add('show');
-        setTimeout(() => {
-          tooltip.classList.remove('show');
-        }, 2000);
+        showToast('✅ Kode referral disalin!', 'success');
       });
     }
 
-    // Simulate referral from URL (when someone clicks referral link)
     function handleReferralFromURL() {
       const params = new URLSearchParams(window.location.search);
       const ref = params.get('ref');
       if (ref && ref !== localStorage.getItem('referralCode')) {
-        // Someone used a referral code
-        const referrerCode = ref;
-        // Add to stats
-        let data = JSON.parse(localStorage.getItem('referralData')) || {
+        const data = JSON.parse(localStorage.getItem('referralData')) || {
           total: 0,
           bonus: 0,
           active: 0
@@ -646,17 +884,13 @@
         data.active += 1;
         localStorage.setItem('referralData', JSON.stringify(data));
         updateReferralStats();
-        // Show notification
-        setTimeout(() => {
-          alert('🎉 Selamat! Kamu berhasil direfer oleh kode ' + referrerCode + '! Dapatkan bonus Rp 25.000 setelah aktif.');
-        }, 500);
-        // Remove ref from URL
+        showToast('🎉 Selamat! Kamu direfer oleh ' + ref + '! Bonus Rp 25.000!', 'success');
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
     handleReferralFromURL();
 
-    // ========== KUIS LOGIC ==========
+    // ========== ENHANCED QUIZ SYSTEM ==========
     const quizData = {
       1: {
         label: "Level 1 - Mudah",
@@ -704,35 +938,56 @@
     let currentQuestionIndex = 0;
     let quizScore = 0;
     let quizAnswered = false;
+    let totalQuestions = 0;
 
     const levelBtns = document.querySelectorAll(".level-btn");
     const quizQuestion = document.getElementById("quiz-question");
     const quizOptions = document.getElementById("quiz-options");
     const quizFeedback = document.getElementById("quiz-feedback");
     const quizNext = document.getElementById("quiz-next");
+    const quizReset = document.getElementById("quiz-reset");
     const quizLevelLabel = document.getElementById("quiz-level-label");
     const quizPointsDisplay = document.getElementById("quiz-points-display");
+    const quizProgressBar = document.getElementById("quiz-progress-bar");
 
     function loadQuiz(level) {
       currentLevel = level;
       currentQuestionIndex = 0;
+      quizScore = 0;
       quizAnswered = false;
       const data = quizData[level];
+      totalQuestions = data.questions.length;
       quizLevelLabel.textContent = data.label;
       quizPointsDisplay.textContent = quizScore;
+      quizReset.classList.add("hidden");
       renderQuestion();
+      
+      // Update active state on buttons
+      levelBtns.forEach(b => b.classList.remove("active"));
+      document.querySelector(`.level-btn[data-level="${level}"]`).classList.add("active");
     }
 
     function renderQuestion() {
       const data = quizData[currentLevel];
-      if (currentQuestionIndex >= data.questions.length) {
+      const total = data.questions.length;
+      
+      if (currentQuestionIndex >= total) {
         quizQuestion.textContent = "🎉 Selamat! Kamu telah menyelesaikan semua soal di level ini!";
         quizOptions.innerHTML = "";
-        quizFeedback.textContent = `Total poin: ${quizScore}`;
+        quizFeedback.innerHTML = `
+          <div class="p-4 bg-green-100 rounded-lg">
+            <p class="font-bold text-green-600">✅ Selesai!</p>
+            <p class="text-sm">Total poin: <span class="font-bold text-[#d9b310]">${quizScore}</span></p>
+            <p class="text-xs text-gray-500 mt-1">Poin telah disimpan ke akunmu</p>
+          </div>
+        `;
         quizNext.classList.add("hidden");
+        quizReset.classList.remove("hidden");
+        
         let currentPoints = parseInt(localStorage.getItem('rewardPoints')) || 0;
         currentPoints += quizScore;
         localStorage.setItem('rewardPoints', currentPoints);
+        showToast(`🎉 +${quizScore} poin dari kuis!`, 'success');
         return;
       }
 
@@ -742,11 +997,16 @@
       quizFeedback.textContent = "";
       quizNext.classList.add("hidden");
       quizAnswered = false;
+      quizReset.classList.add("hidden");
+
+      // Update progress
+      const progress = ((currentQuestionIndex) / total) * 100;
+      quizProgressBar.style.width = progress + '%';
 
       q.options.forEach((opt, idx) => {
         const btn = document.createElement("button");
         btn.textContent = opt;
-        btn.className = "quiz-option w-full text-left px-4 py-3 rounded-lg bg-white border border-gray-300 hover:border-[#d9b310] transition font-medium";
+        btn.className = "quiz-option w-full text-left px-4 py-3 rounded-lg bg-white border-2 border-gray-300 hover:border-[#d9b310] transition font-medium";
         btn.dataset.index = idx;
         btn.addEventListener("click", () => handleAnswer(btn, idx, q.correct));
         quizOptions.appendChild(btn);
@@ -766,16 +1026,19 @@
 
       if (selected === correct) {
         quizScore += 10;
-        quizFeedback.textContent = "✅ Benar! +10 poin";
-        quizFeedback.classList.add("text-green-600");
-        quizFeedback.classList.remove("text-red-600");
+        quizFeedback.innerHTML = `<span class="text-green-600 font-bold">✅ Benar! +10 poin</span>`;
+        showToast('✅ Jawaban benar! +10 poin', 'success');
       } else {
-        quizFeedback.textContent = "❌ Salah. Jawaban: " + options[correct].textContent;
-        quizFeedback.classList.add("text-red-600");
-        quizFeedback.classList.remove("text-green-600");
+        quizFeedback.innerHTML = `<span class="text-red-600 font-bold">❌ Salah. Jawaban: ${options[correct].textContent}</span>`;
+        showToast('❌ Jawaban salah, coba lagi!', 'error');
       }
       quizPointsDisplay.textContent = quizScore;
       quizNext.classList.remove("hidden");
+      
+      // Update progress setelah jawaban
+      const total = quizData[currentLevel].questions.length;
+      const progress = ((currentQuestionIndex + 1) / total) * 100;
+      quizProgressBar.style.width = progress + '%';
     }
 
     quizNext.addEventListener("click", () => {
@@ -783,42 +1046,98 @@
       renderQuestion();
     });
 
+    quizReset.addEventListener("click", () => {
+      if (confirm('Reset kuis dan mulai dari awal?')) {
+        loadQuiz(currentLevel);
+        showToast('🔄 Kuis direset!', 'info');
+      }
+    });
+
     levelBtns.forEach(btn => {
       btn.addEventListener("click", () => {
         const level = parseInt(btn.dataset.level);
         loadQuiz(level);
-        levelBtns.forEach(b => b.classList.remove("bg-[#d9b310]", "text-white"));
-        btn.classList.add("bg-[#d9b310]", "text-white");
       });
     });
 
+    // Load default level 1
     loadQuiz(1);
-    document.querySelector('.level-btn[data-level="1"]').classList.add("bg-[#d9b310]", "text-white");
 
-    // ========== KOMUNITAS ==========
+    // ========== COMMUNITY SYSTEM ==========
     const communityInput = document.getElementById("community-input");
     const communityPostBtn = document.getElementById("community-post-btn");
     const communityPosts = document.getElementById("community-posts");
 
     communityPostBtn.addEventListener("click", () => {
       const text = communityInput.value.trim();
-      if (!text) return;
+      if (!text) {
+        showToast('⚠️ Silakan tulis pesan terlebih dahulu!', 'warning');
+        return;
+      }
+      
       const post = document.createElement("div");
-      post.className = "community-post bg-white p-4 rounded-lg shadow-sm";
+      post.className = "community-post animate-fadeInUp";
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      
       post.innerHTML = `
         <div class="flex items-center gap-2 mb-1">
           <span class="font-bold text-[#d9b310]">@kuliner_semarang</span>
-          <span class="text-xs text-gray-500">Baru saja</span>
+          <span class="text-xs text-gray-500">${timeStr}</span>
         </div>
         <p class="text-gray-800">${text}</p>
         <div class="flex gap-4 mt-2 text-sm text-gray-500">
-          <span><i class="far fa-heart mr-1"></i> 0</span>
-          <span><i class="far fa-comment mr-1"></i> 0</span>
+          <span class="hover:text-[#d9b310] transition cursor-pointer"><i class="far fa-heart mr-1"></i> 0</span>
+          <span class="hover:text-[#d9b310] transition cursor-pointer"><i class="far fa-comment mr-1"></i> 0</span>
+          <span class="hover:text-[#d9b310] transition cursor-pointer"><i class="far fa-share-square mr-1"></i> Bagikan</span>
         </div>
       `;
+      
       communityPosts.prepend(post);
       communityInput.value = "";
+      showToast('✅ Postingan berhasil dibagikan!', 'success');
     });
+
+    // Enter key untuk posting
+    communityInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && e.ctrlKey) {
+        communityPostBtn.click();
+      }
+    });
+
+    // ========== INTERAKTIF HEART BUTTON ==========
+    document.querySelectorAll('.community-post .fa-heart').forEach(heart => {
+      heart.parentElement.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const countEl = this.querySelector('.fa-heart');
+        const count = parseInt(this.textContent.trim());
+        if (countEl.classList.contains('fas')) {
+          countEl.classList.remove('fas');
+          countEl.classList.add('far');
+          this.innerHTML = `<i class="far fa-heart mr-1"></i> ${count - 1}`;
+        } else {
+          countEl.classList.remove('far');
+          countEl.classList.add('fas');
+          this.innerHTML = `<i class="fas fa-heart mr-1 text-red-500"></i> ${count + 1}`;
+        }
+      });
+    });
+
+    // ========== SMOOTH SCROLL ==========
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    console.log('🚀 RasaNusantara loaded successfully!');
+    console.log('📊 Referral Code:', referralCode);
+    console.log('📈 Total Referrals:', referralData.total);
+    console.log('⭐ Quiz Points:', localStorage.getItem('rewardPoints') || 0);
   </script>
 </body>
 </html>
