@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <title>RasaNusantara - Platform Kuliner Semarang</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+  <style>
+    body { font-family: "Inter", sans-serif; }
+    html { scroll-behavior: smooth; }
+  </style>
+</head>
+<body class="bg-[#fff9e6] min-h-screen flex flex-col">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <a class="text-2xl font-extrabold text-[#d9b310] flex items-center gap-2" href="index.html">
+        <span>RasaNusantara</span>
+      </a>
+      <button aria-label="Toggle menu" class="md:hidden text-[#d9b310] border border-[#d9b310] p-2 rounded-md" id="menu-toggle">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+      <ul class="hidden md:flex flex-wrap gap-6 text-[#1a1a1a] font-semibold text-sm sm:text-base items-center" id="menu">
+        <li><a class="hover:text-[#d9b310]" href="index.html#beranda">Beranda</a></li>
+        <li><a class="hover:text-[#d9b310]" href="marketplace.html">Marketplace</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#kuis">Kuis</a></li>
+        <li><a class="hover:text-[#d9b310]" href="ai sejarah.html">AI Sejarah</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#komunitas">Komunitas</a></li>
+        <li><a class="hover:text-[#d9b310]" href="reward.html">Reward</a></li>
+        <li class="ml-auto flex gap-3">
+          <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
+          <button class="border border-[#d9b310] text-[#d9b310] px-4 py-2 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition">Masuk</button>
+        </li>
+      </ul>
+    </div>
+    <!-- Mobile menu -->
+    <div class="md:hidden bg-white px-6 pb-4 hidden" id="mobile-menu">
+      <ul class="flex flex-col gap-4 text-[#1a1a1a] font-semibold text-base">
+        <li><a class="hover:text-[#d9b310]" href="index.html#beranda" onclick="closeMobileMenu()">Beranda</a></li>
+        <li><a class="hover:text-[#d9b310]" href="marketplace.html" onclick="closeMobileMenu()">Marketplace</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#kuis" onclick="closeMobileMenu()">Kuis</a></li>
+        <li><a class="hover:text-[#d9b310]" href="ai sejarah.html" onclick="closeMobileMenu()">AI Sejarah</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#komunitas" onclick="closeMobileMenu()">Komunitas</a></li>
+        <li><a class="hover:text-[#d9b310]" href="reward.html" onclick="closeMobileMenu()">Reward</a></li>
+      </ul>
+      <div class="flex flex-col gap-3 mt-4">
+        <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
+        <button class="border border-[#d9b310] text-[#d9b310] px-4 py-2 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition">Masuk</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="bg-white max-w-7xl mx-auto mt-8 rounded-lg shadow-md px-6 py-12 flex flex-col md:flex-row items-center gap-8" id="beranda">
+    <div class="md:w-1/2">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-[#d9b310] mb-4 leading-tight">
+        Jelajahi & Dukung Kuliner <span class="text-[#b5940e]">Semarang</span>
+      </h1>
+      <p class="text-[#333333] text-base sm:text-lg mb-6">
+        Temukan makanan khas Semarang, ikuti kuis seru, tanyakan sejarah kuliner pada AI, dan bergabung dengan komunitas pecinta kuliner!
+      </p>
+      <a class="inline-block bg-[#d9b310] text-white px-6 py-3 rounded-md font-semibold hover:bg-[#b5940e] transition" href="marketplace.html">
+        Mulai Jelajah
+      </a>
+    </div>
+    <div class="md:w-1/2 w-full">
+      <img alt="Kuliner khas Semarang" class="rounded-lg shadow-lg w-full object-cover max-h-[400px]" src="kuliner.jpg" />
+    </div>
+  </section>
+
+  <!-- KUIS SECTION (tetap di halaman utama) -->
+  <section class="max-w-7xl mx-auto mt-12 px-6 py-8 bg-white rounded-lg shadow-md" id="kuis">
+    <h2 class="text-2xl sm:text-3xl font-bold text-[#d9b310] mb-2 text-center">
+      🧠 Kuis Kuliner Semarang
+    </h2>
+    <p class="text-center max-w-3xl mx-auto text-[#555555] mb-6 text-sm sm:text-base">
+      Uji pengetahuanmu tentang kuliner Semarang! Pilih level, jawab dengan benar, kumpulkan poin, dan tukar di Reward.
+    </p>
+
+    <!-- Level Selector -->
+    <div class="flex flex-wrap justify-center gap-3 mb-6">
+      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="1">Level 1 <span class="level-badge level-1 ml-1">Mudah</span></button>
+      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="2">Level 2 <span class="level-badge level-2 ml-1">Sedang</span></button>
+      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="3">Level 3 <span class="level-badge level-3 ml-1">Menantang</span></button>
+      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="4">Level 4 <span class="level-badge level-4 ml-1">Sulit</span></button>
+      <button class="level-btn px-5 py-2 rounded-full font-semibold text-sm bg-gray-200 hover:bg-[#d9b310] hover:text-white transition" data-level="5">Level 5 <span class="level-badge level-5 ml-1">Expert</span></button>
+    </div>
+
+    <!-- Quiz Container -->
+    <div id="quiz-container" class="max-w-2xl mx-auto bg-[#fff8d6] p-6 rounded-lg shadow-inner">
+      <div id="quiz-status" class="flex justify-between items-center mb-4">
+        <span id="quiz-level-label" class="font-bold text-[#d9b310]">Level 1 - Mudah</span>
+        <span id="quiz-score" class="font-bold">⭐ Poin: 0</span>
+      </div>
+      <div id="quiz-question" class="text-lg font-semibold mb-4">Klik salah satu level di atas untuk mulai kuis!</div>
+      <div id="quiz-options" class="grid grid-cols-1 gap-3"></div>
+      <div id="quiz-feedback" class="mt-4 text-center font-medium"></div>
+      <button id="quiz-next" class="mt-4 bg-[#d9b310] text-white px-6 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition hidden w-full">Soal Selanjutnya →</button>
+    </div>
+  </section>
+
+  <!-- KOMUNITAS SECTION (tetap di halaman utama) -->
+  <section class="max-w-7xl mx-auto mt-12 px-6 py-8 bg-white rounded-lg shadow-md" id="komunitas">
+    <h2 class="text-2xl sm:text-3xl font-bold text-[#d9b310] mb-2 text-center">
+      💬 Komunitas Kuliner Semarang
+    </h2>
+    <p class="text-center max-w-3xl mx-auto text-[#555555] mb-6 text-sm sm:text-base">
+      Tempat diskusi dan berbagi cerita tentang kuliner Semarang. Yuk, saling rekomendasi dan berkenalan!
+    </p>
+
+    <div class="max-w-4xl mx-auto">
+      <!-- Form posting -->
+      <div class="bg-[#fff8d6] p-4 rounded-lg mb-6">
+        <textarea id="community-input" rows="2" placeholder="Bagikan cerita, rekomendasi, atau pertanyaan seputar kuliner Semarang..." class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#d9b310]"></textarea>
+        <div class="flex justify-end mt-2">
+          <button id="community-post-btn" class="bg-[#d9b310] text-white px-6 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">
+            <i class="fas fa-paper-plane mr-2"></i> Posting
+          </button>
+        </div>
+      </div>
+
+      <!-- Daftar postingan -->
+      <div id="community-posts" class="space-y-4">
+        <div class="community-post bg-white p-4 rounded-lg shadow-sm">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="font-bold text-[#d9b310]">@lumpia_lover</span>
+            <span class="text-xs text-gray-500">2 jam lalu</span>
+          </div>
+          <p class="text-gray-800">Rekomendasi Lumpia terenak di Semarang: Lumpia Gang Lombok! Isiannya juicy banget 🤤</p>
+          <div class="flex gap-4 mt-2 text-sm text-gray-500">
+            <span><i class="far fa-heart mr-1"></i> 12</span>
+            <span><i class="far fa-comment mr-1"></i> 5</span>
+          </div>
+        </div>
+        <div class="community-post bg-white p-4 rounded-lg shadow-sm">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="font-bold text-[#d9b310]">@wingko_enthusiast</span>
+            <span class="text-xs text-gray-500">5 jam lalu</span>
+          </div>
+          <p class="text-gray-800">Ada yang tahu sejarah Wingko Babat? Katanya dulu dibawa oleh pedagang dari Babat, Jawa Timur, lalu populer di Semarang.</p>
+          <div class="flex gap-4 mt-2 text-sm text-gray-500">
+            <span><i class="far fa-heart mr-1"></i> 8</span>
+            <span><i class="far fa-comment mr-1"></i> 3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#d9b310] text-white py-6 mt-auto">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-sm text-center md:text-left">© 2025 RasaNusantara. Nikmati kuliner Semarang!</p>
+      <div class="flex gap-6 text-lg">
+        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-twitter"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ========== NAVBAR TOGGLE ==========
+    const menuToggle = document.getElementById("menu-toggle");
+    const mobileMenu = document.getElementById("mobile-menu");
+    menuToggle.addEventListener("click", () => {
+      mobileMenu.classList.toggle("hidden");
+      menuToggle.innerHTML = mobileMenu.classList.contains("hidden") ? '<i class="fas fa-bars text-xl"></i>' : '<i class="fas fa-times text-xl"></i>';
+    });
+    function closeMobileMenu() {
+      mobileMenu.classList.add("hidden");
+      menuToggle.innerHTML = '<i class="fas fa-bars text-xl"></i>';
+    }
+
+    // ========== KUIS LOGIC ==========
+    const quizData = {
+      1: {
+        label: "Level 1 - Mudah",
+        questions: [
+          { q: "Apa makanan khas Semarang yang berisi rebung?", options: ["Lumpia", "Wingko", "Tahu Gimbal"], correct: 0 },
+          { q: "Wingko Babat terbuat dari apa?", options: ["Kelapa & ketan", "Tepung & santan", "Kacang & gula"], correct: 0 },
+          { q: "Bandeng Presto dikenal karena?", options: ["Tanpa duri", "Rasanya pedas", "Berkuah santan"], correct: 0 },
+        ]
+      },
+      2: {
+        label: "Level 2 - Sedang",
+        questions: [
+          { q: "Lumpia Semarang biasanya diisi dengan?", options: ["Rebung & ayam", "Kentang & wortel", "Daging sapi"], correct: 0 },
+          { q: "Apa nama sambal yang biasa disajikan dengan Tahu Gimbal?", options: ["Sambal kacang", "Sambal terasi", "Sambal kecap"], correct: 0 },
+          { q: "Bandeng Presto berasal dari daerah mana?", options: ["Semarang", "Jepara", "Pekalongan"], correct: 0 },
+        ]
+      },
+      3: {
+        label: "Level 3 - Menantang",
+        questions: [
+          { q: "Apa pengaruh budaya Tionghoa pada Lumpia Semarang?", options: ["Isian rebung & udang", "Penggunaan kecap manis", "Bumbu rempah"], correct: 0 },
+          { q: "Wingko Babat pertama kali dijual di daerah mana di Semarang?", options: ["Pasar Johar", "Kota Lama", "Simpang Lima"], correct: 0 },
+          { q: "Tahu Gimbal menggunakan telur bebek atau ayam?", options: ["Telur bebek", "Telur ayam", "Keduanya"], correct: 0 },
+        ]
+      },
+      4: {
+        label: "Level 4 - Sulit",
+        questions: [
+          { q: "Apa bahan utama dalam pembuatan Wingko Babat?", options: ["Kelapa parut & ketan", "Ubi & kelapa", "Ketan & pisang"], correct: 0 },
+          { q: "Lumpia Semarang mulai dipopulerkan oleh siapa?", options: ["Pedagang Tionghoa", "Belanda", "Jawa kuno"], correct: 0 },
+          { q: "Apa perbedaan utama antara Tahu Gimbal dan Tahu Petis?", options: ["Gimbal pakai telur & udang", "Gimbal pedas", "Gimbal berkuah"], correct: 0 },
+        ]
+      },
+      5: {
+        label: "Level 5 - Expert",
+        questions: [
+          { q: "Bagaimana proses pengolahan Bandeng Presto?", options: ["Presto 2 jam dengan rempah", "Diasap selama 6 jam", "Digoreng deep fry"], correct: 0 },
+          { q: "Lumpia Semarang memiliki filosofi apa?", options: ["Persatuan budaya", "Keberanian", "Kemakmuran"], correct: 0 },
+          { q: "Apa nama lain dari Tahu Gimbal di beberapa daerah?", options: ["Tahu Tek", "Tahu Campur", "Tahu Bulat"], correct: 0 },
+        ]
+      }
+    };
+
+    let currentLevel = 1;
+    let currentQuestionIndex = 0;
+    let quizScore = 0;
+    let quizAnswered = false;
+
+    const levelBtns = document.querySelectorAll(".level-btn");
+    const quizQuestion = document.getElementById("quiz-question");
+    const quizOptions = document.getElementById("quiz-options");
+    const quizFeedback = document.getElementById("quiz-feedback");
+    const quizNext = document.getElementById("quiz-next");
+    const quizLevelLabel = document.getElementById("quiz-level-label");
+    const quizScoreDisplay = document.getElementById("quiz-score");
+
+    function loadQuiz(level) {
+      currentLevel = level;
+      currentQuestionIndex = 0;
+      quizAnswered = false;
+      const data = quizData[level];
+      quizLevelLabel.textContent = data.label;
+      quizScoreDisplay.textContent = `⭐ Poin: ${quizScore}`;
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const data = quizData[currentLevel];
+      if (currentQuestionIndex >= data.questions.length) {
+        quizQuestion.textContent = "🎉 Selamat! Kamu telah menyelesaikan semua soal di level ini!";
+        quizOptions.innerHTML = "";
+        quizFeedback.textContent = `Total poin: ${quizScore}`;
+        quizNext.classList.add("hidden");
+        return;
+      }
+
+      const q = data.questions[currentQuestionIndex];
+      quizQuestion.textContent = q.q;
+      quizOptions.innerHTML = "";
+      quizFeedback.textContent = "";
+      quizNext.classList.add("hidden");
+      quizAnswered = false;
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.className = "quiz-option w-full text-left px-4 py-3 rounded-lg bg-white border border-gray-300 hover:border-[#d9b310] transition font-medium";
+        btn.dataset.index = idx;
+        btn.addEventListener("click", () => handleAnswer(btn, idx, q.correct));
+        quizOptions.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(btn, selected, correct) {
+      if (quizAnswered) return;
+      quizAnswered = true;
+
+      const options = quizOptions.querySelectorAll(".quiz-option");
+      options.forEach((el, idx) => {
+        el.classList.add("disabled");
+        if (idx === correct) el.classList.add("correct");
+        else if (idx === selected && selected !== correct) el.classList.add("wrong");
+      });
+
+      if (selected === correct) {
+        quizScore += 10;
+        quizFeedback.textContent = "✅ Benar! +10 poin";
+        quizFeedback.classList.add("text-green-600");
+      } else {
+        quizFeedback.textContent = "❌ Salah. Jawaban: " + options[correct].textContent;
+        quizFeedback.classList.add("text-red-600");
+      }
+      quizScoreDisplay.textContent = `⭐ Poin: ${quizScore}`;
+      quizNext.classList.remove("hidden");
+    }
+
+    quizNext.addEventListener("click", () => {
+      currentQuestionIndex++;
+      renderQuestion();
+    });
+
+    levelBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const level = parseInt(btn.dataset.level);
+        loadQuiz(level);
+        levelBtns.forEach(b => b.classList.remove("bg-[#d9b310]", "text-white"));
+        btn.classList.add("bg-[#d9b310]", "text-white");
+      });
+    });
+
+    loadQuiz(1);
+    document.querySelector('.level-btn[data-level="1"]').classList.add("bg-[#d9b310]", "text-white");
+
+    // ========== KOMUNITAS ==========
+    const communityInput = document.getElementById("community-input");
+    const communityPostBtn = document.getElementById("community-post-btn");
+    const communityPosts = document.getElementById("community-posts");
+
+    communityPostBtn.addEventListener("click", () => {
+      const text = communityInput.value.trim();
+      if (!text) return;
+      const post = document.createElement("div");
+      post.className = "community-post bg-white p-4 rounded-lg shadow-sm";
+      post.innerHTML = `
+        <div class="flex items-center gap-2 mb-1">
+          <span class="font-bold text-[#d9b310]">@kuliner_semarang</span>
+          <span class="text-xs text-gray-500">Baru saja</span>
+        </div>
+        <p class="text-gray-800">${text}</p>
+        <div class="flex gap-4 mt-2 text-sm text-gray-500">
+          <span><i class="far fa-heart mr-1"></i> 0</span>
+          <span><i class="far fa-comment mr-1"></i> 0</span>
+        </div>
+      `;
+      communityPosts.prepend(post);
+      communityInput.value = "";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <title>Marketplace Kuliner Semarang - RasaNusantara</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+  <style>
+    body { font-family: "Inter", sans-serif; }
+    .product-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }
+    .wa-popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .wa-popup.active {
+      display: flex;
+    }
+    .wa-popup-content {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      animation: popupIn 0.3s ease;
+    }
+    @keyframes popupIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .wa-popup-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+      background: none;
+      border: none;
+    }
+    .wa-popup-close:hover { color: #333; }
+    .wa-number {
+      font-size: 20px;
+      font-weight: bold;
+      color: #25D366;
+      margin: 8px 0;
+    }
+    .wa-button {
+      display: inline-block;
+      background: #25D366;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 12px;
+      transition: background 0.2s;
+    }
+    .wa-button:hover {
+      background: #1da851;
+      color: white;
+    }
+    .copy-btn {
+      background: #f0f0f0;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #555;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover { background: #e0e0e0; }
+    .copy-success {
+      color: #25D366;
+      font-size: 12px;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body class="bg-[#fff9e6] min-h-screen flex flex-col">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <a class="text-2xl font-extrabold text-[#d9b310] flex items-center gap-2" href="index.html">
+         <img src="logo.png" alt="Logo" style="width:50px; height:auto;">
+        <span>RasaNusantara</span>
+      </a>
+      <button aria-label="Toggle menu" class="md:hidden text-[#d9b310] border border-[#d9b310] p-2 rounded-md" id="menu-toggle">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+      <ul class="hidden md:flex flex-wrap gap-6 text-[#1a1a1a] font-semibold text-sm sm:text-base items-center" id="menu">
+        <li><a class="hover:text-[#d9b310]" href="index.html">Beranda</a></li>
+        <li><a class="hover:text-[#d9b310] text-[#d9b310]" href="marketplace.html">Marketplace</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#kuis">Kuis</a></li>
+        <li><a class="hover:text-[#d9b310]" href="ai-sejarah.html">AI Sejarah</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#komunitas">Komunitas</a></li>
+        <li><a class="hover:text-[#d9b310]" href="reward.html">Reward</a></li>
+        <li class="ml-auto flex gap-3">
+          <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
+          <button class="border border-[#d9b310] text-[#d9b310] px-4 py-2 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition">Masuk</button>
+        </li>
+      </ul>
+    </div>
+    <!-- Mobile menu -->
+    <div class="md:hidden bg-white px-6 pb-4 hidden" id="mobile-menu">
+      <ul class="flex flex-col gap-4 text-[#1a1a1a] font-semibold text-base">
+        <li><a class="hover:text-[#d9b310]" href="index.html" onclick="closeMobileMenu()">Beranda</a></li>
+        <li><a class="hover:text-[#d9b310]" href="marketplace.html" onclick="closeMobileMenu()">Marketplace</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#kuis" onclick="closeMobileMenu()">Kuis</a></li>
+        <li><a class="hover:text-[#d9b310]" href="ai-sejarah.html" onclick="closeMobileMenu()">AI Sejarah</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#komunitas" onclick="closeMobileMenu()">Komunitas</a></li>
+        <li><a class="hover:text-[#d9b310]" href="reward.html" onclick="closeMobileMenu()">Reward</a></li>
+      </ul>
+      <div class="flex flex-col gap-3 mt-4">
+        <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
+        <button class="border border-[#d9b310] text-[#d9b310] px-4 py-2 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition">Masuk</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO MARKETPLACE -->
+  <section class="bg-white max-w-7xl mx-auto mt-8 rounded-lg shadow-md px-6 py-10 text-center">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-[#d9b310] mb-3">
+      🛒 Marketplace Kuliner Semarang
+    </h1>
+    <p class="text-[#555555] max-w-2xl mx-auto text-base">
+      Temukan makanan khas Semarang dari UMKM lokal. Klik "Hubungi Penjual" untuk memesan langsung via WhatsApp!
+    </p>
+  </section>
+
+  <!-- PRODUK MARKETPLACE -->
+  <section class="max-w-7xl mx-auto mt-6 px-6 py-8 bg-white rounded-lg shadow-md">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      
+      <!-- Product 1: Lumpia -->
+      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
+        <img alt="Lumpia Semarang" class="rounded-t-lg object-cover w-full h-48" src="Lumpia Semarang.jpg" />
+        <div class="p-4 flex flex-col flex-grow">
+          <h3 class="font-bold text-lg">Lumpia Semarang</h3>
+          <p class="text-sm text-[#555555] mb-1 flex-grow">Lumpia renyah isi rebung dan ayam, khas Semarang.</p>
+          <div class="font-semibold text-xl mb-2">Rp 25.000</div>
+          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
+            <i class="fas fa-store"></i>
+            <span>UMKM: Lumpia Ibu Sari</span>
+          </div>
+          <button onclick="openWA('085712345678', 'Lumpia Semarang')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
+            <i class="fab fa-whatsapp"></i> Hubungi Penjual
+          </button>
+        </div>
+      </article>
+
+      <!-- Product 2: Wingko Babat -->
+      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
+        <img alt="Wingko Babat" class="rounded-t-lg object-cover w-full h-48" src="Wingko Babat.jpg" />
+        <div class="p-4 flex flex-col flex-grow">
+          <h3 class="font-bold text-lg">Wingko Babat</h3>
+          <p class="text-sm text-[#555555] mb-1 flex-grow">Kue kelapa panggang legit, oleh-oleh khas Semarang.</p>
+          <div class="font-semibold text-xl mb-2">Rp 20.000</div>
+          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
+            <i class="fas fa-store"></i>
+            <span>UMKM: Wingko Bunda</span>
+          </div>
+          <button onclick="openWA('085798765432', 'Wingko Babat')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
+            <i class="fab fa-whatsapp"></i> Hubungi Penjual
+          </button>
+        </div>
+      </article>
+
+      <!-- Product 3: Tahu Gimbal -->
+      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
+        <img alt="Tahu Gimbal" class="rounded-t-lg object-cover w-full h-48" src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=320&h=200&fit=crop" />
+        <div class="p-4 flex flex-col flex-grow">
+          <h3 class="font-bold text-lg">Tahu Gimbal</h3>
+          <p class="text-sm text-[#555555] mb-1 flex-grow">Tahu goreng dengan lontong, telur, dan sambal kacang.</p>
+          <div class="font-semibold text-xl mb-2">Rp 22.000</div>
+          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
+            <i class="fas fa-store"></i>
+            <span>UMKM: Gimbal Pak Dedi</span>
+          </div>
+          <button onclick="openWA('085711223344', 'Tahu Gimbal')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
+            <i class="fab fa-whatsapp"></i> Hubungi Penjual
+          </button>
+        </div>
+      </article>
+
+      <!-- Product 4: Bandeng Presto -->
+      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
+        <img alt="Bandeng Presto" class="rounded-t-lg object-cover w-full h-48" src="Bandeng Presto.jpg" />
+        <div class="p-4 flex flex-col flex-grow">
+          <h3 class="font-bold text-lg">Bandeng Presto</h3>
+          <p class="text-sm text-[#555555] mb-1 flex-grow">Ikan bandeng tanpa duri, bumbu rempah khas Semarang.</p>
+          <div class="font-semibold text-xl mb-2">Rp 35.000</div>
+          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
+            <i class="fas fa-store"></i>
+            <span>UMKM: Bandeng Jaya</span>
+          </div>
+          <button onclick="openWA('085755667788', 'Bandeng Presto')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
+            <i class="fab fa-whatsapp"></i> Hubungi Penjual
+          </button>
+        </div>
+      </article>
+
+      <!-- Product 5: Soto Semarang -->
+      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
+        <img alt="Soto Semarang" class="rounded-t-lg object-cover w-full h-48" src="Soto Semarang.jpg" />
+        <div class="p-4 flex flex-col flex-grow">
+          <h3 class="font-bold text-lg">Soto Semarang</h3>
+          <p class="text-sm text-[#555555] mb-1 flex-grow">Soto bening dengan ayam suwir, tauge, dan perkedel.</p>
+          <div class="font-semibold text-xl mb-2">Rp 28.000</div>
+          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
+            <i class="fas fa-store"></i>
+            <span>UMKM: Soto Makmur</span>
+          </div>
+          <button onclick="openWA('085799887766', 'Soto Semarang')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
+            <i class="fab fa-whatsapp"></i> Hubungi Penjual
+          </button>
+        </div>
+      </article>
+
+      <!-- Product 6: Mie Kopyok -->
+      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
+        <img alt="Mie Kopyok" class="rounded-t-lg object-cover w-full h-48" src="Kopyok.jpg" />
+        <div class="p-4 flex flex-col flex-grow">
+          <h3 class="font-bold text-lg">Mie Kopyok</h3>
+          <p class="text-sm text-[#555555] mb-1 flex-grow">Mie kuning dengan kuah bawang, kerupuk, dan telur.</p>
+          <div class="font-semibold text-xl mb-2">Rp 18.000</div>
+          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
+            <i class="fas fa-store"></i>
+            <span>UMKM: Mie Kopyok 78</span>
+          </div>
+          <button onclick="openWA('085744556677', 'Mie Kopyok')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
+            <i class="fab fa-whatsapp"></i> Hubungi Penjual
+          </button>
+        </div>
+      </article>
+
+      <!-- Product 7: Nasi Ayam -->
+      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
+        <img alt="Nasi Ayam Semarang" class="rounded-t-lg object-cover w-full h-48" src="Nasi Ayam Semarang.jpg" />
+        <div class="p-4 flex flex-col flex-grow">
+          <h3 class="font-bold text-lg">Nasi Ayam Semarang</h3>
+          <p class="text-sm text-[#555555] mb-1 flex-grow">Nasi dengan suwiran ayam, sambal, dan lalapan segar.</p>
+          <div class="font-semibold text-xl mb-2">Rp 25.000</div>
+          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
+            <i class="fas fa-store"></i>
+            <span>UMKM: Nasi Ayam Mbok Darmi</span>
+          </div>
+          <button onclick="openWA('085733221144', 'Nasi Ayam Semarang')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
+            <i class="fab fa-whatsapp"></i> Hubungi Penjual
+          </button>
+        </div>
+      </article>
+
+      <!-- Product 8: Roti Ganjel Rel -->
+      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
+        <img alt="Roti Ganjel Rel" class="rounded-t-lg object-cover w-full h-48" src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=320&h=200&fit=crop" />
+        <div class="p-4 flex flex-col flex-grow">
+          <h3 class="font-bold text-lg">Roti Ganjel Rel</h3>
+          <p class="text-sm text-[#555555] mb-1 flex-grow">Roti manis dengan isian coklat, oleh-oleh khas Semarang.</p>
+          <div class="font-semibold text-xl mb-2">Rp 30.000</div>
+          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
+            <i class="fas fa-store"></i>
+            <span>UMKM: Roti Ganjel Rel 99</span>
+          </div>
+          <button onclick="openWA('085766554433', 'Roti Ganjel Rel')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
+            <i class="fab fa-whatsapp"></i> Hubungi Penjual
+          </button>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- POPUP WHATSAPP -->
+  <div class="wa-popup" id="waPopup">
+    <div class="wa-popup-content">
+      <button class="wa-popup-close" onclick="closeWA()">&times;</button>
+      <div class="text-center">
+        <i class="fab fa-whatsapp text-6xl text-[#25D366] mb-3"></i>
+        <h3 class="font-bold text-xl mb-2" id="waProductName">Hubungi Penjual</h3>
+        <p class="text-gray-600 text-sm mb-1">Nomor WhatsApp Penjual:</p>
+        <div class="wa-number" id="waNumberDisplay">0857-1234-5678</div>
+        <div class="flex items-center justify-center gap-2 mb-4">
+          <button onclick="copyNumber()" class="copy-btn">
+            <i class="fas fa-copy mr-1"></i> Salin Nomor
+          </button>
+          <span id="copySuccess" class="copy-success" style="display:none;">✓ Tersalin!</span>
+        </div>
+        <p class="text-sm text-gray-500 mb-3">Klik tombol di bawah untuk chat via WhatsApp</p>
+        <a href="#" id="waLink" target="_blank" class="wa-button">
+          <i class="fab fa-whatsapp mr-2"></i> Chat via WhatsApp
+        </a>
+        <button onclick="closeWA()" class="block w-full mt-3 text-gray-500 hover:text-gray-700 text-sm">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#d9b310] text-white py-6 mt-auto">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-sm text-center md:text-left">© 2025 RasaNusantara. Nikmati kuliner Semarang!</p>
+      <div class="flex gap-6 text-lg">
+        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-twitter"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ========== NAVBAR TOGGLE ==========
+    const menuToggle = document.getElementById("menu-toggle");
+    const mobileMenu = document.getElementById("mobile-menu");
+    menuToggle.addEventListener("click", () => {
+      mobileMenu.classList.toggle("hidden");
+      menuToggle.innerHTML = mobileMenu.classList.contains("hidden") ? '<i class="fas fa-bars text-xl"></i>' : '<i class="fas fa-times text-xl"></i>';
+    });
+    function closeMobileMenu() {
+      mobileMenu.classList.add("hidden");
+      menuToggle.innerHTML = '<i class="fas fa-bars text-xl"></i>';
+    }
+
+    // ========== WHATSAPP POPUP ==========
+    let currentWaNumber = '';
+
+    function openWA(number, productName) {
+      currentWaNumber = number;
+      // Format nomor untuk display (contoh: 0857-1234-5678)
+      const formattedNumber = number.replace(/(\d{4})(\d{4})(\d{4})/, '$1-$2-$3');
+      
+      document.getElementById('waNumberDisplay').textContent = formattedNumber;
+      document.getElementById('waProductName').textContent = 'Pesan ' + productName;
+      document.getElementById('waLink').href = 'https://wa.me/' + number + '?text=Halo%20kak%2C%20saya%20mau%20pesan%20' + encodeURIComponent(productName) + '%20dari%20RasaNusantara';
+      
+      document.getElementById('waPopup').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Sembunyikan pesan copy sebelumnya
+      document.getElementById('copySuccess').style.display = 'none';
+    }
+
+    function closeWA() {
+      document.getElementById('waPopup').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function copyNumber() {
+      const number = currentWaNumber;
+      navigator.clipboard.writeText(number).then(() => {
+        const successEl = document.getElementById('copySuccess');
+        successEl.style.display = 'inline';
+        setTimeout(() => {
+          successEl.style.display = 'none';
+        }, 2000);
+      }).catch(() => {
+        // Fallback untuk browser yang tidak support clipboard
+        const input = document.createElement('input');
+        input.value = number;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        const successEl = document.getElementById('copySuccess');
+        successEl.style.display = 'inline';
+        setTimeout(() => {
+          successEl.style.display = 'none';
+        }, 2000);
+      });
+    }
+
+    // Tutup popup jika klik di luar konten
+    document.getElementById('waPopup').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeWA();
+      }
+    });
+
+    // Tutup popup dengan tombol Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeWA();
+      }
+    });
+  </script>
+</body>
+</html>

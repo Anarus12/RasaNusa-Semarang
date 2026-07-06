@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <title>Reward & Penukaran Poin - RasaNusantara</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+  <style>
+    body { font-family: "Inter", sans-serif; }
+    .reward-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .reward-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.12);
+    }
+    .reward-card .badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #d9b310;
+      color: white;
+      padding: 2px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .reward-card .badge.claimed {
+      background: #22c55e;
+    }
+    .reward-card .badge.unavailable {
+      background: #ef4444;
+    }
+    .reward-card.disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .reward-card.disabled::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.5);
+      border-radius: 8px;
+    }
+    /* Popup styles */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(4px);
+    }
+    .popup-overlay.active {
+      display: flex;
+    }
+    .popup-content {
+      background: white;
+      border-radius: 20px;
+      padding: 36px 40px;
+      max-width: 420px;
+      width: 92%;
+      text-align: center;
+      position: relative;
+      animation: popupSlide 0.4s ease;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.2);
+    }
+    @keyframes popupSlide {
+      from { transform: scale(0.8) translateY(30px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .popup-close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #999;
+      background: none;
+      border: none;
+      transition: color 0.2s;
+    }
+    .popup-close:hover { color: #333; }
+    .popup-icon {
+      font-size: 60px;
+      margin-bottom: 12px;
+    }
+    .popup-icon.success { color: #22c55e; }
+    .popup-icon.error { color: #ef4444; }
+    .popup-icon.info { color: #d9b310; }
+    .btn-primary {
+      background: #d9b310;
+      color: white;
+      padding: 12px 32px;
+      border-radius: 50px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 16px;
+    }
+    .btn-primary:hover { background: #b5940e; }
+    .btn-primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .btn-outline {
+      background: transparent;
+      color: #666;
+      padding: 12px 32px;
+      border-radius: 50px;
+      font-weight: 600;
+      border: 2px solid #ddd;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 16px;
+    }
+    .btn-outline:hover {
+      border-color: #d9b310;
+      color: #d9b310;
+    }
+    .poin-counter {
+      background: linear-gradient(135deg, #d9b310, #b5940e);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(217, 179, 16, 0.3);
+    }
+    .poin-counter i {
+      font-size: 24px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a1a;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 500;
+      z-index: 2000;
+      display: none;
+      animation: toastIn 0.4s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      max-width: 90%;
+    }
+    .toast.show {
+      display: block;
+    }
+    @keyframes toastIn {
+      from { transform: translateX(-50%) translateY(30px); opacity: 0; }
+      to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+    .history-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+    .history-item:last-child { border-bottom: none; }
+    .history-item .date { color: #999; font-size: 12px; }
+    .history-item .status { font-weight: 600; }
+    .status-success { color: #22c55e; }
+    .status-pending { color: #d9b310; }
+  </style>
+</head>
+<body class="bg-[#fff9e6] min-h-screen flex flex-col">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <a class="text-2xl font-extrabold text-[#d9b310] flex items-center gap-2" href="index.html">
+        <span>RasaNusantara</span>
+      </a>
+      <button aria-label="Toggle menu" class="md:hidden text-[#d9b310] border border-[#d9b310] p-2 rounded-md" id="menu-toggle">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+      <ul class="hidden md:flex flex-wrap gap-6 text-[#1a1a1a] font-semibold text-sm sm:text-base items-center" id="menu">
+        <li><a class="hover:text-[#d9b310]" href="index.html">Beranda</a></li>
+        <li><a class="hover:text-[#d9b310]" href="marketplace.html">Marketplace</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#kuis">Kuis</a></li>
+        <li><a class="hover:text-[#d9b310]" href="ai-sejarah.html">AI Sejarah</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#komunitas">Komunitas</a></li>
+        <li><a class="hover:text-[#d9b310] text-[#d9b310]" href="reward.html">Reward</a></li>
+        <li class="ml-auto flex gap-3">
+          <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
+          <button class="border border-[#d9b310] text-[#d9b310] px-4 py-2 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition">Masuk</button>
+        </li>
+      </ul>
+    </div>
+    <!-- Mobile menu -->
+    <div class="md:hidden bg-white px-6 pb-4 hidden" id="mobile-menu">
+      <ul class="flex flex-col gap-4 text-[#1a1a1a] font-semibold text-base">
+        <li><a class="hover:text-[#d9b310]" href="index.html" onclick="closeMobileMenu()">Beranda</a></li>
+        <li><a class="hover:text-[#d9b310]" href="marketplace.html" onclick="closeMobileMenu()">Marketplace</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#kuis" onclick="closeMobileMenu()">Kuis</a></li>
+        <li><a class="hover:text-[#d9b310]" href="ai-sejarah.html" onclick="closeMobileMenu()">AI Sejarah</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#komunitas" onclick="closeMobileMenu()">Komunitas</a></li>
+        <li><a class="hover:text-[#d9b310]" href="reward.html" onclick="closeMobileMenu()">Reward</a></li>
+      </ul>
+      <div class="flex flex-col gap-3 mt-4">
+        <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
+        <button class="border border-[#d9b310] text-[#d9b310] px-4 py-2 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition">Masuk</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO REWARD -->
+  <section class="bg-white max-w-7xl mx-auto mt-8 rounded-lg shadow-md px-6 py-10 text-center">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-[#d9b310] mb-3">
+      🎁 Reward & Penukaran Poin
+    </h1>
+    <p class="text-[#555555] max-w-2xl mx-auto text-base">
+      Kumpulkan poin dari kuis dan aktivitas lainnya, lalu tukarkan dengan hadiah menarik!
+    </p>
+    <div class="mt-6">
+      <div class="poin-counter">
+        <i class="fas fa-star"></i>
+        <span id="user-points">0</span> Poin
+      </div>
+    </div>
+    <div class="mt-3 text-sm text-gray-500">
+      <i class="fas fa-info-circle mr-1"></i>
+      Poin diperoleh dari menjawab kuis dengan benar (+10 poin per jawaban)
+    </div>
+  </section>
+
+  <!-- DAFTAR REWARD -->
+  <section class="max-w-7xl mx-auto mt-6 px-6 py-8 bg-white rounded-lg shadow-md">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-[#d9b310]">Pilih Hadiahmu</h2>
+      <button onclick="resetData()" class="text-sm text-gray-400 hover:text-gray-600 transition">
+        <i class="fas fa-undo mr-1"></i> Reset Data
+      </button>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="reward-grid">
+      <!-- Reward cards akan di-generate oleh JavaScript -->
+    </div>
+  </section>
+
+  <!-- RIWAYAT PENUKARAN -->
+  <section class="max-w-4xl mx-auto mt-6 px-6 pb-8">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h3 class="font-bold text-lg text-[#d9b310] mb-3">
+        <i class="fas fa-clock-rotate-left mr-2"></i> Riwayat Penukaran
+      </h3>
+      <div id="history-list" class="max-h-48 overflow-y-auto">
+        <p class="text-gray-400 text-sm" id="empty-history">Belum ada riwayat penukaran.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- POPUP KONFIRMASI -->
+  <div class="popup-overlay" id="popup">
+    <div class="popup-content">
+      <button class="popup-close" onclick="closePopup()">&times;</button>
+      <div class="popup-icon" id="popupIcon">🎉</div>
+      <h3 class="text-xl font-bold mb-2" id="popupTitle">Konfirmasi Penukaran</h3>
+      <p class="text-gray-600 mb-4" id="popupDesc">Apakah kamu yakin ingin menukar hadiah ini?</p>
+      <div class="flex gap-3 justify-center flex-wrap" id="popupActions">
+        <button class="btn-outline" onclick="closePopup()">Batal</button>
+        <button class="btn-primary" id="popupConfirmBtn" onclick="confirmRedeem()">Tukar Sekarang</button>
+      </div>
+      <div id="popupResult" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast"></div>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#d9b310] text-white py-6 mt-auto">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-sm text-center md:text-left">© 2025 RasaNusantara. Nikmati kuliner Semarang!</p>
+      <div class="flex gap-6 text-lg">
+        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-twitter"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ========== NAVBAR TOGGLE ==========
+    const menuToggle = document.getElementById("menu-toggle");
+    const mobileMenu = document.getElementById("mobile-menu");
+    menuToggle.addEventListener("click", () => {
+      mobileMenu.classList.toggle("hidden");
+      menuToggle.innerHTML = mobileMenu.classList.contains("hidden") ? '<i class="fas fa-bars text-xl"></i>' : '<i class="fas fa-times text-xl"></i>';
+    });
+    function closeMobileMenu() {
+      mobileMenu.classList.add("hidden");
+      menuToggle.innerHTML = '<i class="fas fa-bars text-xl"></i>';
+    }
+
+    // ========== DATA REWARD ==========
+    const rewards = [
+      { 
+        id: 1, 
+        name: 'Voucher Makanan Rp 10.000', 
+        icon: 'fa-utensils', 
+        cost: 100, 
+        desc: 'Voucher untuk makanan di UMKM terpilih',
+        color: '#d9b310'
+      },
+      { 
+        id: 2, 
+        name: 'E-Book Resep Kuliner', 
+        icon: 'fa-book-open', 
+        cost: 250, 
+        desc: 'Koleksi 50 resep kuliner khas Semarang',
+        color: '#d9b310'
+      },
+      { 
+        id: 3, 
+        name: 'Merchandise Kaos', 
+        icon: 'fa-tshirt', 
+        cost: 500, 
+        desc: 'Kaos eksklusif RasaNusantara edisi terbatas',
+        color: '#d9b310'
+      },
+      { 
+        id: 4, 
+        name: 'Sertifikat Peserta', 
+        icon: 'fa-trophy', 
+        cost: 150, 
+        desc: 'Sertifikat digital peserta kuis kuliner',
+        color: '#d9b310'
+      },
+      { 
+        id: 5, 
+        name: 'Paket Kuliner 3in1', 
+        icon: 'fa-gift', 
+        cost: 750, 
+        desc: 'Paket berisi 3 makanan khas Semarang',
+        color: '#d9b310'
+      },
+      { 
+        id: 6, 
+        name: 'Premium Member 1 Bulan', 
+        icon: 'fa-crown', 
+        cost: 1000, 
+        desc: 'Akses fitur eksklusif & diskon khusus',
+        color: '#d9b310'
+      }
+    ];
+
+    // ========== STATE ==========
+    let userPoints = parseInt(localStorage.getItem('rewardPoints')) || 250;
+    let claimedRewards = JSON.parse(localStorage.getItem('claimedRewards')) || {};
+    let history = JSON.parse(localStorage.getItem('rewardHistory')) || [];
+    let selectedReward = null;
+
+    // ========== FUNGSI UTAMA ==========
+    function saveState() {
+      localStorage.setItem('rewardPoints', userPoints);
+      localStorage.setItem('claimedRewards', JSON.stringify(claimedRewards));
+      localStorage.setItem('rewardHistory', JSON.stringify(history));
+    }
+
+    function updateUI() {
+      document.getElementById('user-points').textContent = userPoints;
+      renderRewards();
+      renderHistory();
+    }
+
+    function renderRewards() {
+      const grid = document.getElementById('reward-grid');
+      grid.innerHTML = '';
+      
+      rewards.forEach(reward => {
+        const isClaimed = claimedRewards[reward.id] || false;
+        const isAffordable = userPoints >= reward.cost;
+        const card = document.createElement('div');
+        card.className = `reward-card bg-[#fff8d6] rounded-lg shadow-md p-6 text-center border-2 ${isClaimed ? 'border-green-400' : isAffordable ? 'border-transparent hover:border-[#d9b310]' : 'border-gray-200'} ${isClaimed ? 'disabled' : ''}`;
+        
+        const statusBadge = isClaimed 
+          ? '<span class="badge claimed"><i class="fas fa-check mr-1"></i>Sudah Ditukar</span>'
+          : !isAffordable 
+            ? `<span class="badge unavailable"><i class="fas fa-lock mr-1"></i>Poin Kurang</span>`
+            : '';
+        
+        card.innerHTML = `
+          ${statusBadge}
+          <i class="fas ${reward.icon} text-5xl text-[${reward.color}] mb-3"></i>
+          <h3 class="font-bold text-lg">${reward.name}</h3>
+          <p class="text-sm text-gray-600 mb-2">${reward.desc}</p>
+          <div class="font-bold text-[#d9b310] text-lg">${reward.cost} Poin</div>
+          <button 
+            onclick="openRedeemPopup(${reward.id})" 
+            class="mt-4 ${isClaimed ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#d9b310] hover:bg-[#b5940e]'} text-white px-6 py-2 rounded-md font-semibold transition w-full"
+            ${isClaimed ? 'disabled' : ''}
+          >
+            ${isClaimed ? '✓ Sudah Ditukar' : 'Tukar Sekarang'}
+          </button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('history-list');
+      const emptyMsg = document.getElementById('empty-history');
+      
+      if (history.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-sm" id="empty-history">Belum ada riwayat penukaran.</p>';
+        return;
+      }
+      
+      container.innerHTML = history.map(item => `
+        <div class="history-item">
+          <div>
+            <span class="font-medium">${item.rewardName}</span>
+            <span class="date ml-2">${item.date}</span>
+          </div>
+          <div>
+            <span class="status status-success">-${item.cost} poin</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ========== POPUP ==========
+    function openRedeemPopup(rewardId) {
+      const reward = rewards.find(r => r.id === rewardId);
+      if (!reward) return;
+      
+      if (claimedRewards[rewardId]) {
+        showToast('Hadiah ini sudah kamu tukar sebelumnya!', 'info');
+        return;
+      }
+      
+      if (userPoints < reward.cost) {
+        showToast(`Poin tidak cukup! Kamu butuh ${reward.cost - userPoints} poin lagi.`, 'error');
+        return;
+      }
+      
+      selectedReward = reward;
+      document.getElementById('popupIcon').className = 'popup-icon info';
+      document.getElementById('popupIcon').textContent = '🎁';
+      document.getElementById('popupTitle').textContent = `Tukar ${reward.name}`;
+      document.getElementById('popupDesc').textContent = `Kamu akan menukarkan ${reward.cost} poin untuk mendapatkan ${reward.name}. Yakin?`;
+      document.getElementById('popupActions').style.display = 'flex';
+      document.getElementById('popupResult').style.display = 'none';
+      document.getElementById('popupConfirmBtn').textContent = 'Tukar Sekarang';
+      document.getElementById('popupConfirmBtn').disabled = false;
+      document.getElementById('popup').classList.add('active');
+    }
+
+    function confirmRedeem() {
+      if (!selectedReward) return;
+      
+      const reward = selectedReward;
+      const btn = document.getElementById('popupConfirmBtn');
+      btn.disabled = true;
+      btn.textContent = 'Memproses...';
+      
+      // Simulasi proses
+      setTimeout(() => {
+        // Kurangi poin
+        userPoints -= reward.cost;
+        
+        // Tandai sebagai sudah diklaim
+        claimedRewards[reward.id] = true;
+        
+        // Tambah riwayat
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('id-ID', { 
+          day: 'numeric', month: 'long', year: 'numeric', 
+          hour: '2-digit', minute: '2-digit' 
+        });
+        history.unshift({
+          rewardName: reward.name,
+          cost: reward.cost,
+          date: dateStr
+        });
+        
+        saveState();
+        updateUI();
+        
+        // Tampilkan hasil sukses
+        document.getElementById('popupIcon').className = 'popup-icon success';
+        document.getElementById('popupIcon').textContent = '✅';
+        document.getElementById('popupTitle').textContent = 'Berhasil Ditukar!';
+        document.getElementById('popupDesc').textContent = `Selamat! Kamu berhasil mendapatkan ${reward.name}. Cek riwayat penukaran untuk detail.`;
+        document.getElementById('popupActions').style.display = 'none';
+        document.getElementById('popupResult').style.display = 'block';
+        document.getElementById('popupResult').innerHTML = `
+          <div class="mt-2 text-sm text-gray-500">
+            <i class="fas fa-check-circle text-green-500 mr-1"></i>
+            Poin tersisa: ${userPoints}
+          </div>
+        `;
+        
+        showToast(`🎉 Berhasil menukar ${reward.name}!`, 'success');
+        selectedReward = null;
+        
+        // Tutup otomatis setelah 3 detik
+        setTimeout(() => {
+          closePopup();
+        }, 3000);
+      }, 1000);
+    }
+
+    function closePopup() {
+      document.getElementById('popup').classList.remove('active');
+      selectedReward = null;
+    }
+
+    // Tutup popup klik di luar
+    document.getElementById('popup').addEventListener('click', function(e) {
+      if (e.target === this) closePopup();
+    });
+
+    // ========== TOAST ==========
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.background = type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#1a1a1a';
+      toast.classList.add('show');
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // ========== RESET DATA ==========
+    function resetData() {
+      if (confirm('Reset semua data penukaran? Poin akan kembali ke 250.')) {
+        userPoints = 250;
+        claimedRewards = {};
+        history = [];
+        saveState();
+        updateUI();
+        showToast('Data berhasil direset!', 'info');
+      }
+    }
+
+    // ========== TAMBAH POIN DARI KUIS ==========
+    // Fungsi ini bisa dipanggil dari halaman utama (index.html) untuk menambah poin
+    window.addPoints = function(points) {
+      userPoints += points;
+      saveState();
+      updateUI();
+      showToast(`+${points} poin dari kuis!`, 'success');
+    };
+
+    // ========== INISIALISASI ==========
+    updateUI();
+
+    // Cek apakah ada parameter dari halaman kuis
+    const urlParams = new URLSearchParams(window.location.search);
+    const extraPoints = parseInt(urlParams.get('points'));
+    if (extraPoints && extraPoints > 0) {
+      userPoints += extraPoints;
+      saveState();
+      updateUI();
+      showToast(`+${extraPoints} poin dari kuis!`, 'success');
+      // Hapus parameter dari URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  </script>
+</body>
+</html>
