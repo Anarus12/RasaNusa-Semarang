@@ -9,112 +9,320 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
   <style>
     body { font-family: "Inter", sans-serif; }
+    
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .animate-fadeInUp { animation: fadeInUp 0.5s ease forwards; }
+    .animate-pulse-slow { animation: pulse 2s ease-in-out infinite; }
+    
     .product-card {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
     }
     .product-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(217, 179, 16, 0.15);
     }
-    .wa-popup {
+    
+    /* Cart Badge */
+    .cart-badge {
+      position: relative;
+    }
+    .cart-badge .badge-count {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Modal Styles */
+    .modal-overlay {
       display: none;
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.6);
       z-index: 1000;
       justify-content: center;
       align-items: center;
+      backdrop-filter: blur(4px);
     }
-    .wa-popup.active {
+    .modal-overlay.active {
       display: flex;
     }
-    .wa-popup-content {
+    .modal-content {
       background: white;
-      border-radius: 16px;
-      padding: 30px;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-      position: relative;
-      animation: popupIn 0.3s ease;
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 500px;
+      width: 95%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: fadeInUp 0.4s ease;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.2);
     }
-    @keyframes popupIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-    .wa-popup-close {
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      font-size: 24px;
+    .modal-close {
+      float: right;
+      font-size: 28px;
       cursor: pointer;
-      color: #666;
+      color: #999;
       background: none;
       border: none;
+      transition: color 0.2s;
     }
-    .wa-popup-close:hover { color: #333; }
-    .wa-number {
-      font-size: 20px;
+    .modal-close:hover { color: #333; }
+    
+    /* QRIS Display */
+    .qris-container {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      border: 2px dashed #d9b310;
+      text-align: center;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+    .qris-container img {
+      width: 100%;
+      max-width: 200px;
+      height: auto;
+    }
+    
+    /* Quantity Selector */
+    .qty-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid #d9b310;
+      background: white;
+      color: #d9b310;
+      font-size: 18px;
       font-weight: bold;
-      color: #25D366;
-      margin: 8px 0;
-    }
-    .wa-button {
-      display: inline-block;
-      background: #25D366;
-      color: white;
-      padding: 12px 30px;
-      border-radius: 50px;
-      font-weight: 600;
-      text-decoration: none;
-      margin-top: 12px;
-      transition: background 0.2s;
-    }
-    .wa-button:hover {
-      background: #1da851;
-      color: white;
-    }
-    .copy-btn {
-      background: #f0f0f0;
-      border: none;
-      padding: 4px 12px;
-      border-radius: 6px;
       cursor: pointer;
-      font-size: 12px;
-      color: #555;
-      transition: background 0.2s;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .copy-btn:hover { background: #e0e0e0; }
-    .copy-success {
-      color: #25D366;
-      font-size: 12px;
-      margin-left: 6px;
+    .qty-btn:hover {
+      background: #d9b310;
+      color: white;
+    }
+    .qty-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .qty-display {
+      font-size: 20px;
+      font-weight: 700;
+      min-width: 40px;
+      text-align: center;
+    }
+    
+    /* Delivery Option */
+    .delivery-option {
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .delivery-option:hover {
+      border-color: #d9b310;
+      background: #fff8d6;
+    }
+    .delivery-option.selected {
+      border-color: #d9b310;
+      background: #fff8d6;
+      box-shadow: 0 0 0 3px rgba(217, 179, 16, 0.2);
+    }
+    .delivery-option input[type="radio"] {
+      accent-color: #d9b310;
+      width: 18px;
+      height: 18px;
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a1a;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 500;
+      z-index: 2000;
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      max-width: 90%;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-10px);
+    }
+    .toast.success { background: #22c55e; }
+    .toast.error { background: #ef4444; }
+    .toast.info { background: #3b82f6; }
+    
+    /* Cart Sidebar */
+    .cart-sidebar {
+      position: fixed;
+      right: -400px;
+      top: 0;
+      width: 380px;
+      height: 100vh;
+      background: white;
+      box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+      z-index: 999;
+      transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      flex-direction: column;
+    }
+    .cart-sidebar.open {
+      right: 0;
+    }
+    .cart-sidebar-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff8d6;
+    }
+    .cart-sidebar-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 24px;
+    }
+    .cart-sidebar-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #f0f0f0;
+      background: #fafafa;
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item img {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .cart-item-info {
+      flex: 1;
+    }
+    .cart-item-info h4 {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .cart-item-info p {
+      font-size: 13px;
+      color: #666;
+    }
+    .cart-item-qty {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cart-item-qty button {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    .cart-item-qty button:hover {
+      background: #d9b310;
+      color: white;
+      border-color: #d9b310;
+    }
+    .cart-item-qty span {
+      font-weight: 600;
+      min-width: 24px;
+      text-align: center;
+    }
+    .cart-total {
+      font-size: 20px;
+      font-weight: 700;
+      color: #d9b310;
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #d9b310; border-radius: 10px; }
+    
+    /* Responsive */
+    @media (max-width: 640px) {
+      .cart-sidebar { width: 100%; right: -100%; }
+      .modal-content { padding: 20px; margin: 10px; }
     }
   </style>
 </head>
 <body class="bg-[#fff9e6] min-h-screen flex flex-col">
 
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
   <!-- NAVBAR -->
   <nav class="bg-white shadow-md sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-      <a class="text-2xl font-extrabold text-[#d9b310] flex items-center gap-2" href="index.html">
-         <img src="logo.png" alt="Logo" style="width:50px; height:auto;">
+      <a class="text-2xl font-extrabold text-[#d9b310] flex items-center gap-2 hover:scale-105 transition-transform" href="index.html">
         <span>RasaNusantara</span>
       </a>
-      <button aria-label="Toggle menu" class="md:hidden text-[#d9b310] border border-[#d9b310] p-2 rounded-md" id="menu-toggle">
+      <button aria-label="Toggle menu" class="md:hidden text-[#d9b310] border border-[#d9b310] p-2 rounded-md hover:bg-[#d9b310] hover:text-white transition" id="menu-toggle">
         <i class="fas fa-bars text-xl"></i>
       </button>
       <ul class="hidden md:flex flex-wrap gap-6 text-[#1a1a1a] font-semibold text-sm sm:text-base items-center" id="menu">
-        <li><a class="hover:text-[#d9b310]" href="index.html">Beranda</a></li>
-        <li><a class="hover:text-[#d9b310] text-[#d9b310]" href="marketplace.html">Marketplace</a></li>
-        <li><a class="hover:text-[#d9b310]" href="index.html#kuis">Kuis</a></li>
-        <li><a class="hover:text-[#d9b310]" href="ai-sejarah.html">AI Sejarah</a></li>
-        <li><a class="hover:text-[#d9b310]" href="index.html#komunitas">Komunitas</a></li>
-        <li><a class="hover:text-[#d9b310]" href="reward.html">Reward</a></li>
-        <li class="ml-auto flex gap-3">
+        <li><a class="hover:text-[#d9b310] transition-colors" href="index.html">Beranda</a></li>
+        <li><a class="hover:text-[#d9b310] text-[#d9b310] transition-colors" href="marketplace.html">Marketplace</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="index.html#kuis">Kuis</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="ai-sejarah.html">AI Sejarah</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="index.html#komunitas">Komunitas</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="reward.html">Reward</a></li>
+        <li class="ml-auto flex gap-3 items-center">
+          <button onclick="toggleCart()" class="cart-badge relative bg-[#fff8d6] p-2 rounded-full hover:bg-[#d9b310] hover:text-white transition">
+            <i class="fas fa-shopping-cart text-lg"></i>
+            <span class="badge-count" id="cart-count">0</span>
+          </button>
           <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
           <button class="border border-[#d9b310] text-[#d9b310] px-4 py-2 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition">Masuk</button>
         </li>
@@ -137,182 +345,128 @@
     </div>
   </nav>
 
+  <!-- CART SIDEBAR -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-sidebar-header">
+      <h3 class="font-bold text-lg"><i class="fas fa-shopping-cart mr-2"></i> Keranjang Belanja</h3>
+      <button onclick="toggleCart()" class="text-2xl hover:text-[#d9b310] transition">&times;</button>
+    </div>
+    <div class="cart-sidebar-body" id="cartItems">
+      <p class="text-center text-gray-400 mt-8">Keranjang kosong</p>
+    </div>
+    <div class="cart-sidebar-footer">
+      <div class="flex justify-between items-center mb-3">
+        <span class="font-semibold">Total:</span>
+        <span class="cart-total" id="cartTotal">Rp 0</span>
+      </div>
+      <button onclick="checkout()" class="w-full bg-[#d9b310] text-white py-3 rounded-lg font-semibold hover:bg-[#b5940e] transition transform hover:scale-105">
+        <i class="fas fa-shopping-bag mr-2"></i> Checkout
+      </button>
+    </div>
+  </div>
+
+  <!-- OVERLAY untuk cart -->
+  <div class="fixed inset-0 bg-black/30 z-[998] hidden" id="cartOverlay" onclick="toggleCart()"></div>
+
   <!-- HERO MARKETPLACE -->
-  <section class="bg-white max-w-7xl mx-auto mt-8 rounded-lg shadow-md px-6 py-10 text-center">
+  <section class="bg-white max-w-7xl mx-auto mt-8 rounded-2xl shadow-lg px-6 py-10 text-center animate-fadeInUp">
     <h1 class="text-3xl sm:text-4xl font-extrabold text-[#d9b310] mb-3">
       🛒 Marketplace Kuliner Semarang
     </h1>
     <p class="text-[#555555] max-w-2xl mx-auto text-base">
-      Temukan makanan khas Semarang dari UMKM lokal. Klik "Hubungi Penjual" untuk memesan langsung via WhatsApp!
+      Pilih makanan favoritmu, tentukan jumlah, pilih pengiriman, dan bayar dengan QRIS!
     </p>
-  </section>
-
-  <!-- PRODUK MARKETPLACE -->
-  <section class="max-w-7xl mx-auto mt-6 px-6 py-8 bg-white rounded-lg shadow-md">
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      
-      <!-- Product 1: Lumpia -->
-      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
-        <img alt="Lumpia Semarang" class="rounded-t-lg object-cover w-full h-48" src="Lumpia Semarang.jpg" />
-        <div class="p-4 flex flex-col flex-grow">
-          <h3 class="font-bold text-lg">Lumpia Semarang</h3>
-          <p class="text-sm text-[#555555] mb-1 flex-grow">Lumpia renyah isi rebung dan ayam, khas Semarang.</p>
-          <div class="font-semibold text-xl mb-2">Rp 25.000</div>
-          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
-            <i class="fas fa-store"></i>
-            <span>UMKM: Lumpia Ibu Sari</span>
-          </div>
-          <button onclick="openWA('085712345678', 'Lumpia Semarang')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
-            <i class="fab fa-whatsapp"></i> Hubungi Penjual
-          </button>
-        </div>
-      </article>
-
-      <!-- Product 2: Wingko Babat -->
-      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
-        <img alt="Wingko Babat" class="rounded-t-lg object-cover w-full h-48" src="Wingko Babat.jpg" />
-        <div class="p-4 flex flex-col flex-grow">
-          <h3 class="font-bold text-lg">Wingko Babat</h3>
-          <p class="text-sm text-[#555555] mb-1 flex-grow">Kue kelapa panggang legit, oleh-oleh khas Semarang.</p>
-          <div class="font-semibold text-xl mb-2">Rp 20.000</div>
-          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
-            <i class="fas fa-store"></i>
-            <span>UMKM: Wingko Bunda</span>
-          </div>
-          <button onclick="openWA('085798765432', 'Wingko Babat')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
-            <i class="fab fa-whatsapp"></i> Hubungi Penjual
-          </button>
-        </div>
-      </article>
-
-      <!-- Product 3: Tahu Gimbal -->
-      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
-        <img alt="Tahu Gimbal" class="rounded-t-lg object-cover w-full h-48" src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=320&h=200&fit=crop" />
-        <div class="p-4 flex flex-col flex-grow">
-          <h3 class="font-bold text-lg">Tahu Gimbal</h3>
-          <p class="text-sm text-[#555555] mb-1 flex-grow">Tahu goreng dengan lontong, telur, dan sambal kacang.</p>
-          <div class="font-semibold text-xl mb-2">Rp 22.000</div>
-          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
-            <i class="fas fa-store"></i>
-            <span>UMKM: Gimbal Pak Dedi</span>
-          </div>
-          <button onclick="openWA('085711223344', 'Tahu Gimbal')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
-            <i class="fab fa-whatsapp"></i> Hubungi Penjual
-          </button>
-        </div>
-      </article>
-
-      <!-- Product 4: Bandeng Presto -->
-      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
-        <img alt="Bandeng Presto" class="rounded-t-lg object-cover w-full h-48" src="Bandeng Presto.jpg" />
-        <div class="p-4 flex flex-col flex-grow">
-          <h3 class="font-bold text-lg">Bandeng Presto</h3>
-          <p class="text-sm text-[#555555] mb-1 flex-grow">Ikan bandeng tanpa duri, bumbu rempah khas Semarang.</p>
-          <div class="font-semibold text-xl mb-2">Rp 35.000</div>
-          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
-            <i class="fas fa-store"></i>
-            <span>UMKM: Bandeng Jaya</span>
-          </div>
-          <button onclick="openWA('085755667788', 'Bandeng Presto')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
-            <i class="fab fa-whatsapp"></i> Hubungi Penjual
-          </button>
-        </div>
-      </article>
-
-      <!-- Product 5: Soto Semarang -->
-      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
-        <img alt="Soto Semarang" class="rounded-t-lg object-cover w-full h-48" src="Soto Semarang.jpg" />
-        <div class="p-4 flex flex-col flex-grow">
-          <h3 class="font-bold text-lg">Soto Semarang</h3>
-          <p class="text-sm text-[#555555] mb-1 flex-grow">Soto bening dengan ayam suwir, tauge, dan perkedel.</p>
-          <div class="font-semibold text-xl mb-2">Rp 28.000</div>
-          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
-            <i class="fas fa-store"></i>
-            <span>UMKM: Soto Makmur</span>
-          </div>
-          <button onclick="openWA('085799887766', 'Soto Semarang')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
-            <i class="fab fa-whatsapp"></i> Hubungi Penjual
-          </button>
-        </div>
-      </article>
-
-      <!-- Product 6: Mie Kopyok -->
-      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
-        <img alt="Mie Kopyok" class="rounded-t-lg object-cover w-full h-48" src="Kopyok.jpg" />
-        <div class="p-4 flex flex-col flex-grow">
-          <h3 class="font-bold text-lg">Mie Kopyok</h3>
-          <p class="text-sm text-[#555555] mb-1 flex-grow">Mie kuning dengan kuah bawang, kerupuk, dan telur.</p>
-          <div class="font-semibold text-xl mb-2">Rp 18.000</div>
-          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
-            <i class="fas fa-store"></i>
-            <span>UMKM: Mie Kopyok 78</span>
-          </div>
-          <button onclick="openWA('085744556677', 'Mie Kopyok')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
-            <i class="fab fa-whatsapp"></i> Hubungi Penjual
-          </button>
-        </div>
-      </article>
-
-      <!-- Product 7: Nasi Ayam -->
-      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
-        <img alt="Nasi Ayam Semarang" class="rounded-t-lg object-cover w-full h-48" src="Nasi Ayam Semarang.jpg" />
-        <div class="p-4 flex flex-col flex-grow">
-          <h3 class="font-bold text-lg">Nasi Ayam Semarang</h3>
-          <p class="text-sm text-[#555555] mb-1 flex-grow">Nasi dengan suwiran ayam, sambal, dan lalapan segar.</p>
-          <div class="font-semibold text-xl mb-2">Rp 25.000</div>
-          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
-            <i class="fas fa-store"></i>
-            <span>UMKM: Nasi Ayam Mbok Darmi</span>
-          </div>
-          <button onclick="openWA('085733221144', 'Nasi Ayam Semarang')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
-            <i class="fab fa-whatsapp"></i> Hubungi Penjual
-          </button>
-        </div>
-      </article>
-
-      <!-- Product 8: Roti Ganjel Rel -->
-      <article class="product-card bg-[#fff8d6] rounded-lg shadow-md flex flex-col">
-        <img alt="Roti Ganjel Rel" class="rounded-t-lg object-cover w-full h-48" src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=320&h=200&fit=crop" />
-        <div class="p-4 flex flex-col flex-grow">
-          <h3 class="font-bold text-lg">Roti Ganjel Rel</h3>
-          <p class="text-sm text-[#555555] mb-1 flex-grow">Roti manis dengan isian coklat, oleh-oleh khas Semarang.</p>
-          <div class="font-semibold text-xl mb-2">Rp 30.000</div>
-          <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
-            <i class="fas fa-store"></i>
-            <span>UMKM: Roti Ganjel Rel 99</span>
-          </div>
-          <button onclick="openWA('085766554433', 'Roti Ganjel Rel')" class="bg-[#25D366] text-white py-2 rounded-md font-semibold hover:bg-[#1da851] transition flex items-center justify-center gap-2">
-            <i class="fab fa-whatsapp"></i> Hubungi Penjual
-          </button>
-        </div>
-      </article>
-
+    <div class="flex flex-wrap justify-center gap-4 mt-4 text-sm">
+      <span class="bg-[#fff8d6] px-4 py-2 rounded-full"><i class="fas fa-credit-card text-[#d9b310] mr-1"></i> QRIS Payment</span>
+      <span class="bg-[#fff8d6] px-4 py-2 rounded-full"><i class="fas fa-truck text-[#d9b310] mr-1"></i> Antar / Ambil Sendiri</span>
+      <span class="bg-[#fff8d6] px-4 py-2 rounded-full"><i class="fas fa-check-circle text-[#d9b310] mr-1"></i> UMKM Lokal</span>
     </div>
   </section>
 
-  <!-- POPUP WHATSAPP -->
-  <div class="wa-popup" id="waPopup">
-    <div class="wa-popup-content">
-      <button class="wa-popup-close" onclick="closeWA()">&times;</button>
-      <div class="text-center">
-        <i class="fab fa-whatsapp text-6xl text-[#25D366] mb-3"></i>
-        <h3 class="font-bold text-xl mb-2" id="waProductName">Hubungi Penjual</h3>
-        <p class="text-gray-600 text-sm mb-1">Nomor WhatsApp Penjual:</p>
-        <div class="wa-number" id="waNumberDisplay">0857-1234-5678</div>
-        <div class="flex items-center justify-center gap-2 mb-4">
-          <button onclick="copyNumber()" class="copy-btn">
-            <i class="fas fa-copy mr-1"></i> Salin Nomor
-          </button>
-          <span id="copySuccess" class="copy-success" style="display:none;">✓ Tersalin!</span>
+  <!-- PRODUK MARKETPLACE -->
+  <section class="max-w-7xl mx-auto mt-6 px-6 py-8 bg-white rounded-2xl shadow-lg">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="productGrid">
+      <!-- Products akan di-generate oleh JavaScript -->
+    </div>
+  </section>
+
+  <!-- MODAL PEMESANAN -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <h3 class="text-xl font-bold text-[#d9b310] mb-2" id="modalProductName">Pesan Produk</h3>
+      <p class="text-gray-500 text-sm mb-4" id="modalProductPrice">Rp 0</p>
+      
+      <!-- Jumlah Pesanan -->
+      <div class="mb-4">
+        <label class="font-semibold text-sm block mb-2">Jumlah Pesanan</label>
+        <div class="flex items-center gap-4">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <span class="qty-display" id="qtyDisplay">1</span>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+          <span class="text-sm text-gray-400 ml-2">Maks 10</span>
         </div>
-        <p class="text-sm text-gray-500 mb-3">Klik tombol di bawah untuk chat via WhatsApp</p>
-        <a href="#" id="waLink" target="_blank" class="wa-button">
-          <i class="fab fa-whatsapp mr-2"></i> Chat via WhatsApp
-        </a>
-        <button onclick="closeWA()" class="block w-full mt-3 text-gray-500 hover:text-gray-700 text-sm">
-          Tutup
-        </button>
       </div>
+
+      <!-- Opsi Pengiriman -->
+      <div class="mb-4">
+        <label class="font-semibold text-sm block mb-2">Opsi Pengiriman</label>
+        <div class="space-y-2">
+          <label class="delivery-option selected" id="deliveryPickup">
+            <input type="radio" name="delivery" value="pickup" checked />
+            <div>
+              <span class="font-semibold">Ambil Sendiri</span>
+              <p class="text-xs text-gray-500">Gratis • Ambil di lokasi UMKM</p>
+            </div>
+          </label>
+          <label class="delivery-option" id="deliveryDelivery">
+            <input type="radio" name="delivery" value="delivery" />
+            <div>
+              <span class="font-semibold">Diantarkan</span>
+              <p class="text-xs text-gray-500">+Rp 10.000 • Dikirim ke alamatmu</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Alamat (untuk pengiriman) -->
+      <div class="mb-4 hidden" id="addressField">
+        <label class="font-semibold text-sm block mb-1">Alamat Pengiriman</label>
+        <textarea rows="2" placeholder="Masukkan alamat lengkap..." class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#d9b310]"></textarea>
+      </div>
+
+      <!-- Ringkasan -->
+      <div class="bg-[#fff8d6] p-4 rounded-lg mb-4">
+        <div class="flex justify-between text-sm">
+          <span>Harga</span>
+          <span id="summaryPrice">Rp 0</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span>Jumlah</span>
+          <span id="summaryQty">1x</span>
+        </div>
+        <div class="flex justify-between text-sm" id="summaryDeliveryRow">
+          <span>Ongkir</span>
+          <span id="summaryDelivery">Rp 0</span>
+        </div>
+        <div class="border-t border-gray-300 mt-2 pt-2 flex justify-between font-bold text-[#d9b310]">
+          <span>Total</span>
+          <span id="summaryTotal">Rp 0</span>
+        </div>
+      </div>
+
+      <!-- QRIS Payment -->
+      <div class="qris-container mb-4">
+        <p class="text-sm font-semibold text-[#d9b310] mb-2">
+          <i class="fas fa-qrcode mr-1"></i> Scan QRIS untuk Bayar
+        </p>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=RasaNusantara-Payment" alt="QRIS Code" />
+        <p class="text-xs text-gray-400 mt-2">Scan menggunakan aplikasi e-wallet atau mobile banking</p>
+      </div>
+
+      <button onclick="placeOrder()" class="w-full bg-[#d9b310] text-white py-3 rounded-lg font-semibold hover:bg-[#b5940e] transition transform hover:scale-105">
+        <i class="fas fa-check-circle mr-2"></i> Konfirmasi Pesanan
+      </button>
     </div>
   </div>
 
@@ -321,87 +475,352 @@
     <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-sm text-center md:text-left">© 2025 RasaNusantara. Nikmati kuliner Semarang!</p>
       <div class="flex gap-6 text-lg">
-        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="hover:text-[#b5940e] transition"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="hover:text-[#b5940e] transition"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="hover:text-[#b5940e] transition"><i class="fab fa-twitter"></i></a>
       </div>
     </div>
   </footer>
 
   <script>
-    // ========== NAVBAR TOGGLE ==========
-    const menuToggle = document.getElementById("menu-toggle");
-    const mobileMenu = document.getElementById("mobile-menu");
-    menuToggle.addEventListener("click", () => {
-      mobileMenu.classList.toggle("hidden");
-      menuToggle.innerHTML = mobileMenu.classList.contains("hidden") ? '<i class="fas fa-bars text-xl"></i>' : '<i class="fas fa-times text-xl"></i>';
-    });
-    function closeMobileMenu() {
-      mobileMenu.classList.add("hidden");
-      menuToggle.innerHTML = '<i class="fas fa-bars text-xl"></i>';
-    }
+    // ========== DATA PRODUK ==========
+    const products = [
+      { 
+        id: 1, 
+        name: 'Lumpia Semarang', 
+        price: 25000, 
+        image: 'https://images.unsplash.com/photo-1627662059586-39b623c2e1e0?w=320&h=200&fit=crop',
+        desc: 'Lumpia renyah isi rebung dan ayam, khas Semarang.',
+        umkm: 'Lumpia Ibu Sari'
+      },
+      { 
+        id: 2, 
+        name: 'Wingko Babat', 
+        price: 20000, 
+        image: 'https://images.unsplash.com/photo-1584305574647-0cc949a2bb8f?w=320&h=200&fit=crop',
+        desc: 'Kue kelapa panggang legit, oleh-oleh khas Semarang.',
+        umkm: 'Wingko Bunda'
+      },
+      { 
+        id: 3, 
+        name: 'Tahu Gimbal', 
+        price: 22000, 
+        image: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=320&h=200&fit=crop',
+        desc: 'Tahu goreng dengan lontong, telur, dan sambal kacang.',
+        umkm: 'Gimbal Pak Dedi'
+      },
+      { 
+        id: 4, 
+        name: 'Bandeng Presto', 
+        price: 35000, 
+        image: 'https://images.unsplash.com/photo-1559847844-5315695dada3?w=320&h=200&fit=crop',
+        desc: 'Ikan bandeng tanpa duri, bumbu rempah khas Semarang.',
+        umkm: 'Bandeng Jaya'
+      },
+      { 
+        id: 5, 
+        name: 'Soto Semarang', 
+        price: 28000, 
+        image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=320&h=200&fit=crop',
+        desc: 'Soto bening dengan ayam suwir, tauge, dan perkedel.',
+        umkm: 'Soto Makmur'
+      },
+      { 
+        id: 6, 
+        name: 'Mie Kopyok', 
+        price: 18000, 
+        image: 'https://images.unsplash.com/photo-1552611052-33e04de081de?w=320&h=200&fit=crop',
+        desc: 'Mie kuning dengan kuah bawang, kerupuk, dan telur.',
+        umkm: 'Mie Kopyok 78'
+      },
+      { 
+        id: 7, 
+        name: 'Nasi Ayam Semarang', 
+        price: 25000, 
+        image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=320&h=200&fit=crop',
+        desc: 'Nasi dengan suwiran ayam, sambal, dan lalapan segar.',
+        umkm: 'Nasi Ayam Mbok Darmi'
+      },
+      { 
+        id: 8, 
+        name: 'Roti Ganjel Rel', 
+        price: 30000, 
+        image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=320&h=200&fit=crop',
+        desc: 'Roti manis dengan isian coklat, oleh-oleh khas Semarang.',
+        umkm: 'Roti Ganjel Rel 99'
+      }
+    ];
 
-    // ========== WHATSAPP POPUP ==========
-    let currentWaNumber = '';
+    // ========== CART STATE ==========
+    let cart = JSON.parse(localStorage.getItem('marketplaceCart')) || [];
+    let currentProduct = null;
+    let currentQty = 1;
+    let currentDelivery = 'pickup';
+    let deliveryFee = 0;
 
-    function openWA(number, productName) {
-      currentWaNumber = number;
-      // Format nomor untuk display (contoh: 0857-1234-5678)
-      const formattedNumber = number.replace(/(\d{4})(\d{4})(\d{4})/, '$1-$2-$3');
+    // ========== RENDER PRODUK ==========
+    function renderProducts() {
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = '';
       
-      document.getElementById('waNumberDisplay').textContent = formattedNumber;
-      document.getElementById('waProductName').textContent = 'Pesan ' + productName;
-      document.getElementById('waLink').href = 'https://wa.me/' + number + '?text=Halo%20kak%2C%20saya%20mau%20pesan%20' + encodeURIComponent(productName) + '%20dari%20RasaNusantara';
-      
-      document.getElementById('waPopup').classList.add('active');
-      document.body.style.overflow = 'hidden';
-      
-      // Sembunyikan pesan copy sebelumnya
-      document.getElementById('copySuccess').style.display = 'none';
-    }
-
-    function closeWA() {
-      document.getElementById('waPopup').classList.remove('active');
-      document.body.style.overflow = '';
-    }
-
-    function copyNumber() {
-      const number = currentWaNumber;
-      navigator.clipboard.writeText(number).then(() => {
-        const successEl = document.getElementById('copySuccess');
-        successEl.style.display = 'inline';
-        setTimeout(() => {
-          successEl.style.display = 'none';
-        }, 2000);
-      }).catch(() => {
-        // Fallback untuk browser yang tidak support clipboard
-        const input = document.createElement('input');
-        input.value = number;
-        document.body.appendChild(input);
-        input.select();
-        document.execCommand('copy');
-        document.body.removeChild(input);
-        const successEl = document.getElementById('copySuccess');
-        successEl.style.display = 'inline';
-        setTimeout(() => {
-          successEl.style.display = 'none';
-        }, 2000);
+      products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card bg-[#fff8d6] rounded-xl shadow-md flex flex-col animate-fadeInUp';
+        card.style.animationDelay = (products.indexOf(product) * 0.05) + 's';
+        
+        card.innerHTML = `
+          <img alt="${product.name}" class="rounded-t-xl object-cover w-full h-48" src="${product.image}" />
+          <div class="p-4 flex flex-col flex-grow">
+            <div class="flex justify-between items-start">
+              <h3 class="font-bold text-lg">${product.name}</h3>
+              <span class="text-sm text-gray-500">${product.umkm}</span>
+            </div>
+            <p class="text-sm text-[#555555] mb-2 flex-grow">${product.desc}</p>
+            <div class="font-bold text-xl text-[#d9b310] mb-3">Rp ${product.price.toLocaleString()}</div>
+            <button onclick="openOrderModal(${product.id})" class="bg-[#d9b310] text-white py-2 rounded-lg font-semibold hover:bg-[#b5940e] transition transform hover:scale-105">
+              <i class="fas fa-shopping-cart mr-2"></i> Pesan Sekarang
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
       });
     }
 
-    // Tutup popup jika klik di luar konten
-    document.getElementById('waPopup').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeWA();
-      }
+    // ========== ORDER MODAL ==========
+    function openOrderModal(productId) {
+      currentProduct = products.find(p => p.id === productId);
+      if (!currentProduct) return;
+      
+      currentQty = 1;
+      currentDelivery = 'pickup';
+      deliveryFee = 0;
+      
+      document.getElementById('modalProductName').textContent = 'Pesan ' + currentProduct.name;
+      document.getElementById('modalProductPrice').textContent = 'Rp ' + currentProduct.price.toLocaleString();
+      document.getElementById('qtyDisplay').textContent = '1';
+      document.getElementById('qtyDisplay').dataset.qty = '1';
+      
+      // Reset delivery options
+      document.getElementById('deliveryPickup').classList.add('selected');
+      document.getElementById('deliveryDelivery').classList.remove('selected');
+      document.getElementById('deliveryPickup').querySelector('input').checked = true;
+      document.getElementById('deliveryDelivery').querySelector('input').checked = false;
+      document.getElementById('addressField').classList.add('hidden');
+      
+      updateSummary();
+      document.getElementById('orderModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('orderModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // ========== QTY CONTROL ==========
+    function changeQty(delta) {
+      let qty = parseInt(document.getElementById('qtyDisplay').textContent) + delta;
+      if (qty < 1) qty = 1;
+      if (qty > 10) qty = 10;
+      document.getElementById('qtyDisplay').textContent = qty;
+      currentQty = qty;
+      updateSummary();
+    }
+
+    // ========== DELIVERY OPTION ==========
+    document.querySelectorAll('input[name="delivery"]').forEach(input => {
+      input.addEventListener('change', function() {
+        const parent = this.closest('.delivery-option');
+        document.querySelectorAll('.delivery-option').forEach(el => el.classList.remove('selected'));
+        parent.classList.add('selected');
+        
+        if (this.value === 'delivery') {
+          deliveryFee = 10000;
+          document.getElementById('addressField').classList.remove('hidden');
+        } else {
+          deliveryFee = 0;
+          document.getElementById('addressField').classList.add('hidden');
+        }
+        currentDelivery = this.value;
+        updateSummary();
+      });
     });
 
-    // Tutup popup dengan tombol Escape
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeWA();
+    // ========== UPDATE SUMMARY ==========
+    function updateSummary() {
+      const price = currentProduct ? currentProduct.price : 0;
+      const qty = currentQty;
+      const subtotal = price * qty;
+      const total = subtotal + deliveryFee;
+      
+      document.getElementById('summaryPrice').textContent = 'Rp ' + subtotal.toLocaleString();
+      document.getElementById('summaryQty').textContent = qty + 'x';
+      document.getElementById('summaryDelivery').textContent = deliveryFee > 0 ? 'Rp ' + deliveryFee.toLocaleString() : 'Gratis';
+      document.getElementById('summaryTotal').textContent = 'Rp ' + total.toLocaleString();
+    }
+
+    // ========== PLACE ORDER ==========
+    function placeOrder() {
+      if (!currentProduct) return;
+      
+      const qty = currentQty;
+      const subtotal = currentProduct.price * qty;
+      const total = subtotal + deliveryFee;
+      const deliveryMethod = currentDelivery === 'pickup' ? 'Ambil Sendiri' : 'Diantarkan';
+      const address = document.querySelector('#addressField textarea')?.value || '-';
+      
+      // Add to cart
+      const existingItem = cart.find(item => item.id === currentProduct.id);
+      if (existingItem) {
+        existingItem.qty += qty;
+        existingItem.delivery = currentDelivery;
+        existingItem.address = address;
+      } else {
+        cart.push({
+          id: currentProduct.id,
+          name: currentProduct.name,
+          price: currentProduct.price,
+          image: currentProduct.image,
+          qty: qty,
+          delivery: currentDelivery,
+          deliveryMethod: deliveryMethod,
+          address: address,
+          deliveryFee: deliveryFee
+        });
       }
+      
+      localStorage.setItem('marketplaceCart', JSON.stringify(cart));
+      updateCartBadge();
+      closeModal();
+      
+      showToast('✅ Pesanan berhasil ditambahkan ke keranjang!', 'success');
+      toggleCart();
+    }
+
+    // ========== CART FUNCTIONS ==========
+    function toggleCart() {
+      const sidebar = document.getElementById('cartSidebar');
+      const overlay = document.getElementById('cartOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('hidden');
+      if (sidebar.classList.contains('open')) {
+        renderCartItems();
+      }
+    }
+
+    function renderCartItems() {
+      const container = document.getElementById('cartItems');
+      if (cart.length === 0) {
+        container.innerHTML = '<p class="text-center text-gray-400 mt-8">Keranjang kosong</p>';
+        document.getElementById('cartTotal').textContent = 'Rp 0';
+        return;
+      }
+      
+      let html = '';
+      let total = 0;
+      cart.forEach((item, index) => {
+        const itemTotal = item.price * item.qty + (item.deliveryFee || 0);
+        total += itemTotal;
+        html += `
+          <div class="cart-item">
+            <img src="${item.image}" alt="${item.name}" />
+            <div class="cart-item-info">
+              <h4>${item.name}</h4>
+              <p>Rp ${item.price.toLocaleString()} x ${item.qty}</p>
+              <p class="text-xs text-gray-400">${item.deliveryMethod || 'Ambil Sendiri'}</p>
+            </div>
+            <div class="cart-item-qty">
+              <button onclick="updateCartQty(${index}, -1)">-</button>
+              <span>${item.qty}</span>
+              <button onclick="updateCartQty(${index}, 1)">+</button>
+              <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-600 ml-1">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+      document.getElementById('cartTotal').textContent = 'Rp ' + total.toLocaleString();
+    }
+
+    function updateCartQty(index, delta) {
+      if (cart[index]) {
+        cart[index].qty += delta;
+        if (cart[index].qty < 1) {
+          cart.splice(index, 1);
+        }
+        localStorage.setItem('marketplaceCart', JSON.stringify(cart));
+        updateCartBadge();
+        renderCartItems();
+      }
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      localStorage.setItem('marketplaceCart', JSON.stringify(cart));
+      updateCartBadge();
+      renderCartItems();
+      if (cart.length === 0) toggleCart();
+    }
+
+    function updateCartBadge() {
+      const count = cart.reduce((sum, item) => sum + item.qty, 0);
+      document.getElementById('cart-count').textContent = count;
+    }
+
+    // ========== CHECKOUT ==========
+    function checkout() {
+      if (cart.length === 0) {
+        showToast('⚠️ Keranjang kosong!', 'error');
+        return;
+      }
+      
+      const total = cart.reduce((sum, item) => sum + (item.price * item.qty) + (item.deliveryFee || 0), 0);
+      
+      if (confirm(`Total pesanan: Rp ${total.toLocaleString()}\n\nLanjutkan ke pembayaran QRIS?`)) {
+        showToast('✅ Pesanan berhasil! Silakan scan QRIS untuk pembayaran.', 'success');
+        cart = [];
+        localStorage.setItem('marketplaceCart', JSON.stringify(cart));
+        updateCartBadge();
+        toggleCart();
+        renderCartItems();
+      }
+    }
+
+    // ========== TOAST ==========
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast ' + type;
+      setTimeout(() => toast.classList.add('show'), 10);
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // ========== NAVBAR TOGGLE ==========
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      menuToggle.innerHTML = mobileMenu.classList.contains('hidden') ? '<i class="fas fa-bars text-xl"></i>' : '<i class="fas fa-times text-xl"></i>';
     });
+    function closeMobileMenu() {
+      mobileMenu.classList.add('hidden');
+      menuToggle.innerHTML = '<i class="fas fa-bars text-xl"></i>';
+    }
+
+    // ========== CLICK OUTSIDE MODAL ==========
+    document.getElementById('orderModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    // ========== INIT ==========
+    renderProducts();
+    updateCartBadge();
   </script>
 </body>
 </html>
