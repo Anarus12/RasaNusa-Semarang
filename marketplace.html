@@ -453,10 +453,23 @@
         </div>
       </div>
 
-      <!-- Alamat (untuk pengiriman) -->
+      <!-- ALAMAT UMKM (untuk Ambil Sendiri) -->
+      <div class="mb-4" id="umkmAddressField">
+        <label class="font-semibold text-sm block mb-1">
+          <i class="fas fa-map-marker-alt text-[#d9b310] mr-1"></i> Alamat UMKM
+        </label>
+        <div class="bg-[#fff8d6] p-3 rounded-lg border border-[#d9b310]/30 text-sm" id="umkmAddressDisplay">
+          <p class="text-gray-700">Jl. Contoh Alamat No. 123, Semarang</p>
+          <p class="text-xs text-gray-400 mt-1">📍 Ambil sendiri di lokasi UMKM</p>
+        </div>
+      </div>
+
+      <!-- Alamat Pengiriman (untuk Diantarkan) -->
       <div class="mb-4 hidden" id="addressField">
-        <label class="font-semibold text-sm block mb-1">Alamat Pengiriman</label>
-        <textarea rows="2" placeholder="Masukkan alamat lengkap..." class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#d9b310]"></textarea>
+        <label class="font-semibold text-sm block mb-1">
+          <i class="fas fa-home text-[#d9b310] mr-1"></i> Alamat Pengiriman
+        </label>
+        <textarea rows="2" placeholder="Masukkan alamat lengkap tujuan pengiriman..." class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#d9b310]"></textarea>
       </div>
 
       <!-- Ringkasan -->
@@ -515,7 +528,8 @@
         price: 25000, 
         image: 'Lumpia Semarang.jpg',
         desc: 'Lumpia renyah isi rebung dan ayam, khas Semarang.',
-        umkm: 'Lumpia Ibu Sari'
+        umkm: 'Lumpia Ibu Sari',
+        alamat: 'Jl. Pemuda No. 45, Semarang Tengah, Semarang'
       },
       { 
         id: 2, 
@@ -523,7 +537,8 @@
         price: 20000, 
         image: 'Wingko Babat.jpg',
         desc: 'Kue kelapa panggang legit, oleh-oleh khas Semarang.',
-        umkm: 'Wingko Bunda'
+        umkm: 'Wingko Bunda',
+        alamat: 'Jl. Pandanaran No. 12, Semarang Selatan, Semarang'
       },
       { 
         id: 3, 
@@ -531,7 +546,8 @@
         price: 22000, 
         image: 'Tahu Gimbal.jpg',
         desc: 'Tahu goreng dengan lontong, telur, dan sambal kacang.',
-        umkm: 'Gimbal Pak Dedi'
+        umkm: 'Gimbal Pak Dedi',
+        alamat: 'Jl. Simpang Lima No. 78, Semarang, Jawa Tengah'
       },
       { 
         id: 4, 
@@ -539,7 +555,8 @@
         price: 35000, 
         image: 'Bandeng Presto.jpg',
         desc: 'Ikan bandeng tanpa duri, bumbu rempah khas Semarang.',
-        umkm: 'Bandeng Jaya'
+        umkm: 'Bandeng Jaya',
+        alamat: 'Jl. Muntilan No. 23, Semarang Barat, Semarang'
       },
       { 
         id: 5, 
@@ -547,7 +564,8 @@
         price: 28000, 
         image: 'Soto Semarang.jpg',
         desc: 'Soto bening dengan ayam suwir, tauge, dan perkedel.',
-        umkm: 'Soto Makmur'
+        umkm: 'Soto Makmur',
+        alamat: 'Jl. Gajahmada No. 56, Semarang Utara, Semarang'
       },
       { 
         id: 6, 
@@ -555,7 +573,8 @@
         price: 18000, 
         image: 'Kopyok.jpg',
         desc: 'Mie kuning dengan kuah bawang, kerupuk, dan telur.',
-        umkm: 'Mie Kopyok 78'
+        umkm: 'Mie Kopyok 78',
+        alamat: 'Jl. Pahlawan No. 34, Semarang Timur, Semarang'
       },
       { 
         id: 7, 
@@ -563,7 +582,8 @@
         price: 25000, 
         image: 'Nasi Ayam Semarang.jpg',
         desc: 'Nasi dengan suwiran ayam, sambal, dan lalapan segar.',
-        umkm: 'Nasi Ayam Mbok Darmi'
+        umkm: 'Nasi Ayam Mbok Darmi',
+        alamat: 'Jl. Diponegoro No. 89, Semarang, Jawa Tengah'
       },
       { 
         id: 8, 
@@ -571,7 +591,8 @@
         price: 30000, 
         image: 'ganjel.jpg',
         desc: 'Roti manis dengan isian coklat, oleh-oleh khas Semarang.',
-        umkm: 'Roti Ganjel Rel 99'
+        umkm: 'Roti Ganjel Rel 99',
+        alamat: 'Jl. Stasiun No. 1, Semarang, Jawa Tengah'
       }
     ];
 
@@ -638,12 +659,19 @@
       document.getElementById('modalProductPrice').textContent = 'Rp ' + currentProduct.price.toLocaleString();
       document.getElementById('qtyDisplay').textContent = '1';
       
+      // Tampilkan alamat UMKM
+      document.getElementById('umkmAddressDisplay').innerHTML = `
+        <p class="text-gray-700">${currentProduct.alamat}</p>
+        <p class="text-xs text-gray-400 mt-1">📍 Ambil sendiri di lokasi UMKM</p>
+      `;
+      
       // Reset delivery options
       document.getElementById('deliveryPickup').classList.add('selected');
       document.getElementById('deliveryDelivery').classList.remove('selected');
       document.getElementById('deliveryPickup').querySelector('input').checked = true;
       document.getElementById('deliveryDelivery').querySelector('input').checked = false;
       document.getElementById('addressField').classList.add('hidden');
+      document.getElementById('umkmAddressField').classList.remove('hidden');
       
       updateSummary();
       document.getElementById('orderModal').classList.add('active');
@@ -675,9 +703,11 @@
         if (this.value === 'delivery') {
           deliveryFee = 10000;
           document.getElementById('addressField').classList.remove('hidden');
+          document.getElementById('umkmAddressField').classList.add('hidden');
         } else {
           deliveryFee = 0;
           document.getElementById('addressField').classList.add('hidden');
+          document.getElementById('umkmAddressField').classList.remove('hidden');
         }
         currentDelivery = this.value;
         updateSummary();
@@ -705,7 +735,9 @@
       const subtotal = currentProduct.price * qty;
       const total = subtotal + deliveryFee;
       const deliveryMethod = currentDelivery === 'pickup' ? 'Ambil Sendiri' : 'Diantarkan';
-      const address = document.querySelector('#addressField textarea')?.value || '-';
+      const address = currentDelivery === 'pickup' 
+        ? currentProduct.alamat 
+        : document.querySelector('#addressField textarea')?.value || '-';
       
       // Add to cart
       const existingItem = cart.find(item => item.id === currentProduct.id);
@@ -715,6 +747,7 @@
         existingItem.address = address;
         existingItem.deliveryFee = deliveryFee;
         existingItem.deliveryMethod = deliveryMethod;
+        existingItem.alamatUmkm = currentProduct.alamat;
       } else {
         cart.push({
           id: currentProduct.id,
@@ -725,6 +758,7 @@
           delivery: currentDelivery,
           deliveryMethod: deliveryMethod,
           address: address,
+          alamatUmkm: currentProduct.alamat,
           deliveryFee: deliveryFee
         });
       }
@@ -761,6 +795,10 @@
       cart.forEach((item, index) => {
         const itemTotal = item.price * item.qty + (item.deliveryFee || 0);
         total += itemTotal;
+        const addressDisplay = item.delivery === 'pickup' 
+          ? `📍 ${item.alamatUmkm || item.address}` 
+          : `🚚 ${item.address || '-'}`;
+        
         html += `
           <div class="cart-item">
             <img src="${item.image}" alt="${item.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect width=%2250%22 height=%2250%22 fill=%22%23f3f4f6%22/%3E%3Ctext x=%2225%22 y=%2225%22 text-anchor=%22middle%22 dy=%22.35em%22 fill=%22%239ca3af%22 font-size=%2212%22 font-family=%22sans-serif%22%3E🍽️%3C/text%3E%3C/svg%3E'" />
@@ -768,6 +806,7 @@
               <h4>${item.name}</h4>
               <p>Rp ${item.price.toLocaleString()} x ${item.qty}</p>
               <p class="text-xs text-gray-400">${item.deliveryMethod || 'Ambil Sendiri'}</p>
+              <p class="text-xs text-gray-500 truncate max-w-[150px]">${addressDisplay}</p>
             </div>
             <div class="cart-item-qty">
               <button onclick="updateCartQty(${index}, -1)">-</button>
