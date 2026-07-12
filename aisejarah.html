@@ -44,12 +44,14 @@
         <i class="fas fa-bars text-xl"></i>
       </button>
       <ul class="hidden md:flex flex-wrap gap-6 text-[#1a1a1a] font-semibold text-sm sm:text-base items-center" id="menu">
-        <li><a class="hover:text-[#d9b310]" href="index.html">Beranda</a></li>
-        <li><a class="hover:text-[#d9b310]" href="marketplace.html">Marketplace</a></li>
-        <li><a class="hover:text-[#d9b310]" href="index.html#kuis">Kuis</a></li>
-        <li><a class="hover:text-[#d9b310] text-[#d9b310]" href="ai-sejarah.html">AI Sejarah</a></li>
-        <li><a class="hover:text-[#d9b310]" href="index.html#komunitas">Komunitas</a></li>
-        <li><a class="hover:text-[#d9b310]" href="reward.html">Reward</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="index.html">Beranda</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="marketplace.html">Marketplace</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="index.html#kuis">Kuis</a></li>
+        <li><a class="hover:text-[#d9b310] text-[#d9b310] transition-colors" href="ai-sejarah.html">AI Sejarah</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="index.html#komunitas">Komunitas</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="reward.html">Reward</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="index.html#afiliasi">Afiliasi</a></li>
+        <li><a class="hover:text-[#d9b310] transition-colors" href="index.html#premium">Premium</a></li>
         <li class="ml-auto flex gap-3">
           <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
           <button class="border border-[#d9b310] text-[#d9b310] px-4 py-2 rounded-md font-semibold hover:bg-[#d9b310] hover:text-white transition">Masuk</button>
@@ -65,6 +67,8 @@
         <li><a class="hover:text-[#d9b310]" href="ai-sejarah.html" onclick="closeMobileMenu()">AI Sejarah</a></li>
         <li><a class="hover:text-[#d9b310]" href="index.html#komunitas" onclick="closeMobileMenu()">Komunitas</a></li>
         <li><a class="hover:text-[#d9b310]" href="reward.html" onclick="closeMobileMenu()">Reward</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#afiliasi" onclick="closeMobileMenu()">Afiliasi</a></li>
+        <li><a class="hover:text-[#d9b310]" href="index.html#premium" onclick="closeMobileMenu()">Premium</a></li>
       </ul>
       <div class="flex flex-col gap-3 mt-4">
         <button class="bg-[#d9b310] text-white px-4 py-2 rounded-md font-semibold hover:bg-[#b5940e] transition">Daftar UMKM</button>
@@ -106,23 +110,32 @@
     <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-sm text-center md:text-left">© 2025 RasaNusantara. Nikmati kuliner Semarang!</p>
       <div class="flex gap-6 text-lg">
-        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="hover:text-[#b5940e]"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="hover:text-[#b5940e] transition"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="hover:text-[#b5940e] transition"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="hover:text-[#b5940e] transition"><i class="fab fa-twitter"></i></a>
       </div>
     </div>
   </footer>
 
   <script>
+    // ========== NAVBAR TOGGLE ==========
     const menuToggle = document.getElementById("menu-toggle");
     const mobileMenu = document.getElementById("mobile-menu");
-    menuToggle.addEventListener("click", () => {
-      mobileMenu.classList.toggle("hidden");
-      menuToggle.innerHTML = mobileMenu.classList.contains("hidden") ? '<i class="fas fa-bars text-xl"></i>' : '<i class="fas fa-times text-xl"></i>';
-    });
+    
+    if (menuToggle) {
+      menuToggle.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+        menuToggle.innerHTML = mobileMenu.classList.contains("hidden") ? '<i class="fas fa-bars text-xl"></i>' : '<i class="fas fa-times text-xl"></i>';
+      });
+    }
+    
     function closeMobileMenu() {
-      mobileMenu.classList.add("hidden");
-      menuToggle.innerHTML = '<i class="fas fa-bars text-xl"></i>';
+      if (mobileMenu) {
+        mobileMenu.classList.add("hidden");
+      }
+      if (menuToggle) {
+        menuToggle.innerHTML = '<i class="fas fa-bars text-xl"></i>';
+      }
     }
 
     // ========== AI SEJARAH LOGIC ==========
@@ -130,24 +143,56 @@
     const aiInput = document.getElementById("ai-input");
     const aiSend = document.getElementById("ai-send");
 
+    // Data sejarah yang lebih lengkap
     const sejarahData = [
-      { keyword: ["lumpia", "lumpia semarang"], answer: "Lumpia Semarang terinspirasi dari lumpia Tionghoa, namun dimodifikasi dengan isian rebung, ayam, dan udang. Oleh-oleh khas ini mulai populer sejak zaman kolonial Belanda dan menjadi ikon kuliner Semarang." },
-      { keyword: ["wingko", "wingko babat"], answer: "Wingko Babat berasal dari Babat, Lamongan, namun dikenal luas di Semarang. Terbuat dari kelapa parut dan ketan, awalnya dibawa oleh pedagang asal Jawa Timur pada abad ke-19. Kue ini menjadi oleh-oleh favorit karena rasanya yang legit." },
-      { keyword: ["tahu gimbal", "gimbal"], answer: "Tahu Gimbal adalah makanan khas Semarang yang terdiri dari tahu goreng, lontong, telur, dan sambal kacang. 'Gimbal' merujuk pada adonan udang yang digoreng. Konon, makanan ini terinspirasi dari Tahu Tek Surabaya namun dimodifikasi dengan telur dan udang." },
-      { keyword: ["bandeng", "bandeng presto", "presto"], answer: "Bandeng Presto adalah inovasi kuliner Semarang yang membuat ikan bandeng lunak dan durinya hancur. Proses presto dengan bumbu rempah khas seperti bawang, kunyit, dan jahe membuatnya istimewa. Awalnya dikembangkan oleh pengusaha kuliner Semarang pada tahun 1980-an." },
-      { keyword: ["soto", "soto semarang", "soto kudus"], answer: "Soto Semarang memiliki kuah bening dengan isian suwiran ayam, tauge, dan bawang goreng. Biasanya disajikan dengan perkedel dan sambal kecap. Soto Semarang berbeda dengan Soto Kudus yang menggunakan daging sapi, sedangkan Soto Semarang menggunakan ayam." },
-      { keyword: ["mie kopyok", "mie kopyok semarang"], answer: "Mie Kopyok adalah mie kuning dengan kuah bawang putih yang gurih, ditambah kerupuk, telur, dan seledri. Makanan ini sederhana namun populer di kalangan anak muda Semarang karena harganya yang terjangkau dan rasanya yang khas." },
-      { keyword: ["nasi ayam", "nasi ayam semarang"], answer: "Nasi Ayam Semarang adalah nasi dengan suwiran ayam, sambal, dan lalapan. Bedanya dengan nasi ayam lainnya, nasi ayam Semarang biasanya menggunakan bumbu yang lebih ringan dan segar, serta disajikan dengan kerupuk." }
+      { 
+        keyword: ["lumpia", "lumpia semarang"], 
+        answer: "🌯 **Lumpia Semarang**\n\nLumpia Semarang terinspirasi dari lumpia Tionghoa, namun dimodifikasi dengan isian rebung, ayam, dan udang. Oleh-oleh khas ini mulai populer sejak zaman kolonial Belanda dan menjadi ikon kuliner Semarang. Lumpia terkenal dari daerah Gang Lombok yang sudah ada sejak tahun 1930-an." 
+      },
+      { 
+        keyword: ["wingko", "wingko babat"], 
+        answer: "🥥 **Wingko Babat**\n\nWingko Babat berasal dari Babat, Lamongan, namun dikenal luas di Semarang. Terbuat dari kelapa parut dan ketan, awalnya dibawa oleh pedagang asal Jawa Timur pada abad ke-19. Kue ini menjadi oleh-oleh favorit karena rasanya yang legit dan teksturnya yang lembut." 
+      },
+      { 
+        keyword: ["tahu gimbal", "gimbal"], 
+        answer: "🍽️ **Tahu Gimbal**\n\nTahu Gimbal adalah makanan khas Semarang yang terdiri dari tahu goreng, lontong, telur, dan sambal kacang. 'Gimbal' merujuk pada adonan udang yang digoreng. Konon, makanan ini terinspirasi dari Tahu Tek Surabaya namun dimodifikasi dengan telur dan udang sebagai ciri khas Semarang." 
+      },
+      { 
+        keyword: ["bandeng", "bandeng presto", "presto"], 
+        answer: "🐟 **Bandeng Presto**\n\nBandeng Presto adalah inovasi kuliner Semarang yang membuat ikan bandeng lunak dan durinya hancur. Proses presto dengan bumbu rempah khas seperti bawang, kunyit, dan jahe membuatnya istimewa. Awalnya dikembangkan oleh pengusaha kuliner Semarang pada tahun 1980-an dan kini menjadi oleh-oleh favorit." 
+      },
+      { 
+        keyword: ["soto", "soto semarang"], 
+        answer: "🍜 **Soto Semarang**\n\nSoto Semarang memiliki kuah bening dengan isian suwiran ayam, tauge, dan bawang goreng. Biasanya disajikan dengan perkedel dan sambal kecap. Soto Semarang berbeda dengan Soto Kudus yang menggunakan daging sapi, sedangkan Soto Semarang menggunakan ayam sebagai protein utamanya." 
+      },
+      { 
+        keyword: ["mie kopyok", "mie kopyok semarang"], 
+        answer: "🍜 **Mie Kopyok**\n\nMie Kopyok adalah mie kuning dengan kuah bawang putih yang gurih, ditambah kerupuk, telur, dan seledri. Makanan ini sederhana namun populer di kalangan anak muda Semarang karena harganya yang terjangkau dan rasanya yang khas. Nama 'Kopyok' berasal dari cara penyajiannya yang 'dikopyok' atau diaduk." 
+      },
+      { 
+        keyword: ["nasi ayam", "nasi ayam semarang"], 
+        answer: "🍗 **Nasi Ayam Semarang**\n\nNasi Ayam Semarang adalah nasi dengan suwiran ayam, sambal, dan lalapan. Bedanya dengan nasi ayam lainnya, nasi ayam Semarang biasanya menggunakan bumbu yang lebih ringan dan segar, serta disajikan dengan kerupuk. Cocok untuk sarapan atau makan siang." 
+      },
+      { 
+        keyword: ["roti ganjel", "ganjel", "roti ganjel rel"], 
+        answer: "🍞 **Roti Ganjel Rel**\n\nRoti Ganjel Rel adalah roti manis khas Semarang dengan isian coklat atau selai. Nama 'Ganjel Rel' berasal dari bentuknya yang menyerupai bantalan rel kereta api. Roti ini menjadi oleh-oleh favorit karena rasanya yang manis dan teksturnya yang lembut." 
+      }
     ];
 
     function getSejarahAnswer(question) {
       const q = question.toLowerCase();
+      
+      // Cari berdasarkan keyword
       for (let item of sejarahData) {
         for (let kw of item.keyword) {
-          if (q.includes(kw)) return item.answer;
+          if (q.includes(kw)) {
+            return item.answer;
+          }
         }
       }
-      return "Maaf, saya belum punya data tentang itu. Coba tanyakan tentang Lumpia, Wingko, Tahu Gimbal, Bandeng Presto, Soto Semarang, atau Mie Kopyok ya!";
+      
+      // Jika tidak ditemukan
+      return "🙏 Maaf, saya belum punya data tentang itu. Coba tanyakan tentang:\n\n• Lumpia Semarang\n• Wingko Babat\n• Tahu Gimbal\n• Bandeng Presto\n• Soto Semarang\n• Mie Kopyok\n• Nasi Ayam Semarang\n• Roti Ganjel Rel";
     }
 
     function addAIMessage(text, sender) {
@@ -160,15 +205,77 @@
 
     function handleAIChat() {
       const text = aiInput.value.trim();
-      if (!text) return;
+      if (!text) {
+        addAIMessage("Silakan tulis pertanyaan terlebih dahulu 😊", "bot");
+        return;
+      }
       addAIMessage(text, "user");
       aiInput.value = "";
       const reply = getSejarahAnswer(text);
-      setTimeout(() => addAIMessage(reply, "bot"), 400);
+      setTimeout(() => addAIMessage(reply, "bot"), 500);
     }
 
-    aiSend.addEventListener("click", handleAIChat);
-    aiInput.addEventListener("keydown", (e) => { if (e.key === "Enter") handleAIChat(); });
+    if (aiSend) {
+      aiSend.addEventListener("click", handleAIChat);
+    }
+    
+    if (aiInput) {
+      aiInput.addEventListener("keydown", (e) => { 
+        if (e.key === "Enter") handleAIChat(); 
+      });
+    }
+
+    // ========== FIX: Cegah link error ==========
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href === '#') {
+          e.preventDefault();
+          return;
+        }
+        // Jika link adalah anchor ke halaman lain, cek apakah di halaman yang sama
+        if (href.includes('#')) {
+          const targetId = href.split('#')[1];
+          const targetElement = document.getElementById(targetId);
+          if (targetElement) {
+            e.preventDefault();
+            targetElement.scrollIntoView({ behavior: 'smooth' });
+          }
+          // Jika tidak ada target, biarkan default (akan pindah ke halaman index)
+        }
+      });
+    });
+
+    // ========== TAMBAHKAN FALLBACK UNTUK NAVIGASI ==========
+    // Cek apakah index.html ada, jika tidak redirect ke halaman utama
+    function checkPageExists(url) {
+      fetch(url, { method: 'HEAD' })
+        .then(response => {
+          if (!response.ok) {
+            // Jika halaman tidak ditemukan, ganti link ke #
+            document.querySelectorAll(`a[href="${url}"]`).forEach(link => {
+              link.href = '#';
+              link.style.color = '#999';
+              link.title = 'Halaman sedang dalam pengembangan';
+            });
+          }
+        })
+        .catch(() => {
+          // Jika error, ganti link ke #
+          document.querySelectorAll(`a[href="${url}"]`).forEach(link => {
+            link.href = '#';
+            link.style.color = '#999';
+            link.title = 'Halaman sedang dalam pengembangan';
+          });
+        });
+    }
+
+    // Cek halaman-halaman yang mungkin belum ada
+    const pagesToCheck = ['marketplace.html', 'reward.html', 'index.html'];
+    pagesToCheck.forEach(page => checkPageExists(page));
+
+    console.log('🤖 AI Sejarah Kuliner Semarang siap digunakan!');
+    console.log('📚 Data makanan: Lumpia, Wingko, Tahu Gimbal, Bandeng Presto, Soto, Mie Kopyok, Nasi Ayam, Roti Ganjel Rel');
   </script>
 </body>
 </html>
